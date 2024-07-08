@@ -1,6 +1,10 @@
 package com.venomdevelopment.sunwise;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,16 +17,25 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.android.volley.VolleyError;
 import com.venomdevelopment.sunwise.Adapters.HourlyAdapters;
 import com.venomdevelopment.sunwise.Domains.Hourly;
+import com.venomdevelopment.sunwise.WeatherService;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapterHourly;
     private RecyclerView recyclerView;
+    private WeatherService weatherService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +63,56 @@ public class MainActivity extends AppCompatActivity {
                 wiptoast.show();
             }
         });
+
     }
 
     private void initRecyclerView() {
-        ArrayList<Hourly> items = new ArrayList<>();
-        items.add(new Hourly("9 pm", 28, "cloudy"));
-        items.add(new Hourly("10 pm", 29, "sun"));
-        items.add(new Hourly("11 pm", 30, "windy"));
-        items.add(new Hourly("12 am", 29, "rain"));
-        items.add(new Hourly("1 am", 27, "tstorm"));
+        weatherService = new WeatherService(this);
+        weatherService.getForecast("Vestal", "imperial", new WeatherService.ForecastCallback() {
+            @Override
+            public void onSuccess(JSONObject forecast) {
+                try {
+                    JSONArray list = forecast.getJSONArray("list");
+                    ArrayList<Hourly> items = new ArrayList<>();
+                    Date date = new Date();
+                    Calendar calendar = GregorianCalendar.getInstance();
+                    // Loop through each forecast item
+                    for (int i = 0; i < list.length()/8; i++) {
+                        String onehr = String.valueOf(calendar.get(Calendar.HOUR) + i + 1);
+                        JSONObject forecastItem = list.getJSONObject(i*8);
+                        JSONObject main = forecastItem.getJSONObject("main");
 
-        recyclerView = findViewById(R.id.view1);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterHourly = new HourlyAdapters(items);
-        recyclerView.setAdapter(adapterHourly);
+                        // Get temperature information
+                        int temp = main.getInt("temp");
+                        int tempMin = main.getInt("temp_min");
+                        int tempMax = main.getInt("temp_max");
+
+                        // Do something with the temperature data (e.g., display, store, etc.)
+                        Log.d("Forecast", "Temperature: " + temp + "°F");
+                        Log.d("Forecast", "Min Temperature: " + tempMin + "°F");
+                        Log.d("Forecast", "Max Temperature: " + tempMax + "°F");
+                        items.add(new Hourly(onehr + ":00", temp, "clouds"));
+
+                        // You can access other weather details like humidity, pressure, etc., if needed
+                        // Example: int humidity = main.getInt("humidity");
+                        // Example: int pressure = main.getInt("pressure");
+                    }
+
+                    recyclerView = findViewById(R.id.view1);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
+                    adapterHourly = new HourlyAdapters(items);
+                    recyclerView.setAdapter(adapterHourly);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                Log.d("DATA", "Error occured, VolleyError was triggered");
+            }
+
+
+        });
     }
 }
