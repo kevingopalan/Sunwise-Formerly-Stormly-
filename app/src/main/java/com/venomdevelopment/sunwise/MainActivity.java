@@ -1,118 +1,94 @@
 package com.venomdevelopment.sunwise;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.VolleyError;
-import com.venomdevelopment.sunwise.Adapters.HourlyAdapters;
-import com.venomdevelopment.sunwise.Domains.Hourly;
-import com.venomdevelopment.sunwise.WeatherService;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView.Adapter adapterHourly;
-    private RecyclerView recyclerView;
+
+    private static final String TAG = MainActivity.class.getSimpleName();
     private WeatherService weatherService;
+
+    private TextView tempText, tempText2, temp1text, descText, humidityText;
+    private Button search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        Objects.requireNonNull(getSupportActionBar()).hide();
         setContentView(R.layout.activity_main);
+        // Initialize UI components
+        tempText = findViewById(R.id.text_home);  // Replace with your actual TextView IDs
+        descText = findViewById(R.id.text_desc);
+        humidityText = findViewById(R.id.text_humidity);
+        search = findViewById(R.id.search);
+
+        // Initialize WeatherService
+        weatherService = new WeatherService(this);
+
+        // Example latitude and longitude (replace with actual coordinates)
+        double latitude = 85;
+        double longitude = 105;
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Display toast
+                Toast.makeText(MainActivity.this, "Fetching weather data...", Toast.LENGTH_SHORT).show();
+                // Call method to fetch weather data
+                fetchWeatherData(latitude, longitude);
+            }
+        });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        initRecyclerView();
-        TextView tempText, tempText2, temp1text, descText , humidityText;
-        Button search;
-        search = findViewById(R.id.search);
-        CharSequence toasttext = "I am rewriting the forecast code, just wait a bit lol";
-        int duration = Toast.LENGTH_SHORT;
-        Toast wiptoast = Toast.makeText(this, toasttext, duration);
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // calling api
-                wiptoast.show();
-            }
-        });
-
     }
 
-    private void initRecyclerView() {
-        weatherService = new WeatherService(this);
-        weatherService.getForecast("Vestal", "imperial", new WeatherService.ForecastCallback() {
+    private void fetchWeatherData(double latitude, double longitude) {
+        weatherService.getWeather(latitude, longitude, new WeatherService.WeatherResponseListener() {
             @Override
-            public void onSuccess(JSONObject forecast) {
-                try {
-                    JSONArray list = forecast.getJSONArray("list");
-                    ArrayList<Hourly> items = new ArrayList<>();
-                    Date date = new Date();
-                    Calendar calendar = GregorianCalendar.getInstance();
-                    // Loop through each forecast item
-                    for (int i = 0; i < list.length()/8; i++) {
-                        String onehr = String.valueOf(calendar.get(Calendar.HOUR) + i + 1);
-                        JSONObject forecastItem = list.getJSONObject(i*8);
-                        JSONObject main = forecastItem.getJSONObject("main");
+            public void onResponse(CurrentWeather currentWeather, List<HourlyForecast> hourlyForecasts, List<DailyForecast> dailyForecasts) {
+                // Update UI with weather data
+                Log.d(TAG, "Current Temperature: " + currentWeather.getTemperature());
+                Log.d(TAG, "Min Temperature Today: " + currentWeather.getMinTemperature());
+                Log.d(TAG, "Max Temperature Today: " + currentWeather.getMaxTemperature());
+                Log.d(TAG, "Current Forecast: " + currentWeather.getForecast());
 
-                        // Get temperature information
-                        int temp = main.getInt("temp");
-                        int tempMin = main.getInt("temp_min");
-                        int tempMax = main.getInt("temp_max");
+                // Example: Update TextViews with weather data
+                tempText.setText(currentWeather.getTemperature());
+                descText.setText(currentWeather.getForecast());
 
-                        // Do something with the temperature data (e.g., display, store, etc.)
-                        Log.d("Forecast", "Temperature: " + temp + "°F");
-                        Log.d("Forecast", "Min Temperature: " + tempMin + "°F");
-                        Log.d("Forecast", "Max Temperature: " + tempMax + "°F");
-                        items.add(new Hourly(onehr + ":00", temp, "clouds"));
+                // Example: Handle hourly forecasts (if needed)
+                for (HourlyForecast hourlyForecast : hourlyForecasts) {
+                    Log.d(TAG, "Hour: " + hourlyForecast.getTime() + ", Temperature: " + hourlyForecast.getTemperature() + ", Forecast: " + hourlyForecast.getForecast());
+                    // Handle displaying hourly forecast data
+                }
 
-                        // You can access other weather details like humidity, pressure, etc., if needed
-                        // Example: int humidity = main.getInt("humidity");
-                        // Example: int pressure = main.getInt("pressure");
-                    }
-
-                    recyclerView = findViewById(R.id.view1);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
-                    adapterHourly = new HourlyAdapters(items);
-                    recyclerView.setAdapter(adapterHourly);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                // Example: Handle daily forecasts (if needed)
+                for (DailyForecast dailyForecast : dailyForecasts) {
+                    Log.d(TAG, "Date: " + dailyForecast.getDate() + ", Min Temperature: " + dailyForecast.getMinTemperature() + ", Max Temperature: " + dailyForecast.getMaxTemperature() + ", Forecast: " + dailyForecast.getForecast());
+                    // Handle displaying daily forecast data
                 }
             }
 
             @Override
-            public void onError(VolleyError error) {
-                Log.d("DATA", "Error occured, VolleyError was triggered");
+            public void onError(String message) {
+                Log.e(TAG, "Weather API Error: " + message);
+                Toast.makeText(MainActivity.this, "Failed to fetch weather data", Toast.LENGTH_SHORT).show();
             }
-
-
         });
     }
 }

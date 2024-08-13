@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
+        android:background="@drawable/gradient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:context=".MainActivity">
@@ -15,7 +16,6 @@
             android:id="@+id/topgradient"
             android:layout_width="match_parent"
             android:layout_height="500dp"
-            android:background="@drawable/gradient"
             android:textAlignment="center"
             android:textColor="#60acbd"
             android:textSize="50sp"
@@ -31,7 +31,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="90dp"
-            android:hint="Location"
+            android:hint="Your address here"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -42,12 +42,15 @@
 
         <Button
             android:id="@+id/search"
+            android:backgroundTint="#76569A"
             android:background="@drawable/background_searchbar"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="0dp"
             android:paddingStart="15dp"
+            android:textColor="#ffffff"
+            app:backgroundTint="#76569A"
             app:layout_constraintStart_toEndOf="@id/text_search"
             app:layout_constraintTop_toTopOf="@id/text_search"
             android:drawableLeft="@drawable/go"/>
@@ -68,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="166dp"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="140dp"
             android:textSize="50sp"
             android:textColor="#fff"
             android:text="--º"
@@ -77,24 +80,27 @@
 
         <TextView
             android:id="@+id/text_desc"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginRight="20sp"
-            android:textSize="15sp"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:text="Feels Like --º"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_home"
-            android:textColor="#ffffff"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_home" />
 
         <TextView
             android:id="@+id/text_humidity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="80dp"
             android:layout_marginRight="20sp"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_desc"
+            app:layout_constraintBottom_toTopOf="@id/text_desc"
             android:text="Humidity: --º"
             android:textColor="#ffffff"/>
 
