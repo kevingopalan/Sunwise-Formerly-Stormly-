@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Current Forecast: " + currentWeather.getForecast());
 
                 // Example: Update TextViews with weather data
-                tempText.setText(currentWeather.getTemperature());
-                descText.setText(currentWeather.getForecast());
+                tempText.setText(currentWeather.getTemperature() +"º");
+                descText.setText(currentWeather.getForecast() + "º");
 
                 // Example: Handle hourly forecasts (if needed)
                 for (HourlyForecast hourlyForecast : hourlyForecasts) {
