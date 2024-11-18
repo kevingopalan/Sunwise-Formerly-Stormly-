@@ -4,91 +4,230 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import java.util.List;
-import java.util.Objects;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private WeatherService weatherService;
+    private static final String BASE_URL_POINTS = "https://api.weather.gov/points/";
+    private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search?q=";
+    private static final String USER_AGENT = "Mozilla/5.0";
 
-    private TextView tempText, tempText2, temp1text, descText, humidityText;
-    private Button search;
+    private RequestQueue requestQueue;
+    private TextView tempText, descText, humidityText;
+    private EditText search;
+    private Button searchButton;
+    MyRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // Initialize UI components
-        tempText = findViewById(R.id.text_home);  // Replace with your actual TextView IDs
+        tempText = findViewById(R.id.text_home);
         descText = findViewById(R.id.text_desc);
-        humidityText = findViewById(R.id.text_humidity);
-        search = findViewById(R.id.search);
+        search = findViewById(R.id.text_search);
+        searchButton = findViewById(R.id.search);
 
-        // Initialize WeatherService
-        weatherService = new WeatherService(this);
+        // Initialize Volley RequestQueue
+        requestQueue = Volley.newRequestQueue(this);
 
-        // Example latitude and longitude (replace with actual coordinates)
-        double latitude = 85;
-        double longitude = 105;
-
-        search.setOnClickListener(new View.OnClickListener() {
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Display toast
-                Toast.makeText(MainActivity.this, "Fetching weather data...", Toast.LENGTH_SHORT).show();
-                // Call method to fetch weather data
-                fetchWeatherData(latitude, longitude);
+                String address = search.getText().toString().trim();
+                if (!address.isEmpty()) {
+                    fetchGeocodingData(address);
+                } else {
+                    Toast.makeText(MainActivity.this, "Please enter an address", Toast.LENGTH_SHORT).show();
+                }
             }
-        });
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
         });
     }
 
-    private void fetchWeatherData(double latitude, double longitude) {
-        weatherService.getWeather(latitude, longitude, new WeatherService.WeatherResponseListener() {
+    private void fetchGeocodingData(String address) {
+        // Encode the address for the URL
+        String encodedAddress = address.replaceAll(" ", "+");
+        String geocodeUrl = NOMINATIM_URL + encodedAddress + "&format=json&addressdetails=1";
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+                (Request.Method.GET, geocodeUrl, null, new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            // Get the first result
+                            JSONObject firstResult = response.getJSONObject(0);
+                            String lat = firstResult.getString("lat");
+                            String lon = firstResult.getString("lon");
+
+                            // Build the points URL using the coordinates
+                            String pointsUrl = BASE_URL_POINTS + lat + "," + lon;
+                            fetchWeatherData(pointsUrl);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(MainActivity.this, "Error parsing geocoding data", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "Error fetching geocoding data: " + error.getMessage());
+                        Toast.makeText(MainActivity.this, "Error fetching geocoding data", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
             @Override
-            public void onResponse(CurrentWeather currentWeather, List<HourlyForecast> hourlyForecasts, List<DailyForecast> dailyForecasts) {
-                // Update UI with weather data
-                Log.d(TAG, "Current Temperature: " + currentWeather.getTemperature());
-                Log.d(TAG, "Min Temperature Today: " + currentWeather.getMinTemperature());
-                Log.d(TAG, "Max Temperature Today: " + currentWeather.getMaxTemperature());
-                Log.d(TAG, "Current Forecast: " + currentWeather.getForecast());
-
-                // Example: Update TextViews with weather data
-                tempText.setText(currentWeather.getTemperature() +"º");
-                descText.setText(currentWeather.getForecast() + "º");
-
-                // Example: Handle hourly forecasts (if needed)
-                for (HourlyForecast hourlyForecast : hourlyForecasts) {
-                    Log.d(TAG, "Hour: " + hourlyForecast.getTime() + ", Temperature: " + hourlyForecast.getTemperature() + ", Forecast: " + hourlyForecast.getForecast());
-                    // Handle displaying hourly forecast data
-                }
-
-                // Example: Handle daily forecasts (if needed)
-                for (DailyForecast dailyForecast : dailyForecasts) {
-                    Log.d(TAG, "Date: " + dailyForecast.getDate() + ", Min Temperature: " + dailyForecast.getMinTemperature() + ", Max Temperature: " + dailyForecast.getMaxTemperature() + ", Forecast: " + dailyForecast.getForecast());
-                    // Handle displaying daily forecast data
-                }
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("User-Agent", USER_AGENT);
+                return headers;
             }
+        };
 
+        requestQueue.add(jsonArrayRequest);
+    }
+
+    private void fetchWeatherData(String pointsUrl) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, pointsUrl, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            // Extract the forecast URL from the response
+                            JSONObject properties = response.getJSONObject("properties");
+                            String forecastUrl = properties.getString("forecast");
+                            String forecastHourlyUrl = properties.getString("forecastHourly");
+
+                            // Fetch weather data from the forecast URL
+                            JsonObjectRequest forecastRequest = new JsonObjectRequest
+                                    (Request.Method.GET, forecastUrl, null, new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            try {
+                                                // Parse the weather data
+                                                JSONObject properties = response.getJSONObject("properties");
+                                                JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
+                                                String temperature = current.getString("temperature");
+                                                String description = current.getString("shortForecast");
+
+                                                WeatherData weatherData = new WeatherData(temperature, description);
+                                                //updateUI(weatherData);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Toast.makeText(MainActivity.this, "Error parsing weather data", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.e(TAG, "Error fetching weather data: " + error.getMessage());
+                                            Toast.makeText(MainActivity.this, "Error fetching weather data", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }) {
+                                @Override
+                                public Map<String, String> getHeaders() {
+                                    Map<String, String> headers = new HashMap<>();
+                                    headers.put("User-Agent", USER_AGENT);
+                                    return headers;
+                                }
+                            };
+                            JsonObjectRequest forecastHourlyRequest = new JsonObjectRequest
+                                    (Request.Method.GET, forecastHourlyUrl, null, new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            try {
+                                                // Parse the weather data
+                                                JSONObject properties = response.getJSONObject("properties");
+                                                JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
+                                                String temperature = current.getString("temperature");
+                                                String description = current.getString("shortForecast");
+                                                new WeatherData(temperature, description);
+                                                WeatherData weatherHourlyData;
+                                                ArrayList<String> hourlyItems = new ArrayList<>();
+                                                for (int i = 0; i < 144; i++) {
+                                                    current = properties.getJSONArray("periods").getJSONObject(i);
+                                                    temperature = current.getString("temperature");
+                                                    description = current.getString("shortForecast");
+                                                    weatherHourlyData = new WeatherData(temperature, description);
+                                                    if (i == 0) {
+                                                        updateUI(weatherHourlyData);
+                                                    }
+                                                    hourlyItems.add(weatherHourlyData.getTemperature() + "°");
+
+                                                    // set up the RecyclerView
+                                                    RecyclerView recyclerView = findViewById(R.id.hourlyRecyclerView);
+                                                    recyclerView.setNestedScrollingEnabled(false);
+                                                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                                                    adapter = new MyRecyclerViewAdapter(MainActivity.this, hourlyItems);
+                                                    recyclerView.setAdapter(adapter);
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Toast.makeText(MainActivity.this, "Error parsing weather data", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.e(TAG, "Error fetching weather data: " + error.getMessage());
+                                            Toast.makeText(MainActivity.this, "Error fetching weather data", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }) {
+                                @Override
+                                public Map<String, String> getHeaders() {
+                                    Map<String, String> headers = new HashMap<>();
+                                    headers.put("User-Agent", USER_AGENT);
+                                    return headers;
+                                }
+                            };
+
+                            requestQueue.add(forecastRequest);
+                            requestQueue.add(forecastHourlyRequest);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(MainActivity.this, "Error parsing points data", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "Error fetching points data: " + error.getMessage());
+                        Toast.makeText(MainActivity.this, "Error fetching points data", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
             @Override
-            public void onError(String message) {
-                Log.e(TAG, "Weather API Error: " + message);
-                Toast.makeText(MainActivity.this, "Failed to fetch weather data", Toast.LENGTH_SHORT).show();
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("User-Agent", USER_AGENT);
+                return headers;
             }
-        });
+        };
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void updateUI(WeatherData weatherData) {
+        tempText.setText(weatherData.getTemperature() + "°");
+        descText.setText(weatherData.getDescription());
     }
 }
