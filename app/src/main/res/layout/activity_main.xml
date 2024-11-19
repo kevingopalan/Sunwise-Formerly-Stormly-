@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,12 +9,19 @@
     android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
     tools:targetApi="o">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montreg"
-        android:fitsSystemWindows="true">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
 
         <EditText
             android:id="@+id/text_search"
@@ -23,29 +30,29 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="90dp"
-            android:hint="Your address here"
-            android:background="@drawable/background_searchbar"
             android:autofillHints="postalAddress"
-            android:paddingStart="10dp"
+            android:background="@drawable/background_searchbar"
+            android:hint="Your address here"
             android:inputType="textPostalAddress"
+            android:paddingStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/search"
-            android:backgroundTint="#76569A"
-            android:background="@drawable/background_searchbar"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="0dp"
+            android:background="@drawable/background_searchbar"
+            android:backgroundTint="#76569A"
+            android:drawableLeft="@drawable/go"
             android:paddingStart="15dp"
-            app:backgroundTint="#76569A"
             android:textColor="#ffffff"
+            app:backgroundTint="#76569A"
             app:layout_constraintStart_toEndOf="@id/text_search"
-            app:layout_constraintTop_toTopOf="@id/text_search"
-            android:drawableLeft="@drawable/go"/>
+            app:layout_constraintTop_toTopOf="@id/text_search" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -55,21 +62,21 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toEndOf="@+id/text_home"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/pcloudy"/>
+            app:srcCompat="@drawable/pcloudy" />
 
         <TextView
             android:id="@+id/text_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="--º"
             android:layout_marginStart="40dp"
+            android:layout_marginTop="40dp"
             android:fontFamily="@font/montsemibold"
+            android:text="--º"
             android:textColor="#fff"
             android:textSize="50sp"
             app:layout_constraintEnd_toStartOf="@id/imageView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/imageView"/>
+            app:layout_constraintTop_toTopOf="@id/imageView" />
 
         <TextView
             android:id="@+id/text_desc"
@@ -80,26 +87,31 @@
             android:textColor="#ffffff"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="@id/text_home"
-            app:layout_constraintTop_toBottomOf="@id/text_home"/>
+            app:layout_constraintTop_toBottomOf="@id/text_home" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/hourlyRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:overScrollMode="never"
             android:layout_marginTop="20dp"
+            android:overScrollMode="never"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_desc"/>
+            app:layout_constraintTop_toBottomOf="@id/text_desc" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
-            android:layout_width="match_parent"
-            android:layout_height="75dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:menu="@menu/bottom_nav_menu"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        android:background="@drawable/background_hourly"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
