@@ -18,7 +18,7 @@
         android:id="@+id/tempTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/montsemibold"
+        android:fontFamily="@font/montbold"
         android:paddingStart="10dp"
         android:paddingTop="5dp"
         android:paddingEnd="10dp"
@@ -47,9 +47,34 @@
         android:layout_marginStart="20dp"
         android:text="time"
         android:textAlignment="center"
+        android:fontFamily="@font/montsemibold"
         android:textColor="@color/md_theme_onBackground"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@+id/text_hourlyhome"
         app:layout_constraintTop_toTopOf="@id/text_hourlyhome"
         app:layout_constraintBottom_toBottomOf="@id/text_hourlyhome" />
+    <TextView
+        android:id="@+id/precipitationTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:padding="5dp"
+        android:fontFamily="@font/montsemibold"
+        android:layout_marginEnd="10dp"
+        android:text="50%"
+        android:textAlignment="center"
+        android:textColor="@color/md_theme_onBackground"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/text_hourlyhome"
+        app:layout_constraintTop_toTopOf="@id/text_hourlyhome"
+        app:layout_constraintBottom_toBottomOf="@id/text_hourlyhome"
+        android:background="@drawable/background_prec"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="@id/precipitationTxt"
+        app:layout_constraintEnd_toStartOf="@id/precipitationTxt"
+        app:layout_constraintTop_toTopOf="@id/precipitationTxt"
+        android:src="@drawable/rainy_24px"
+        android:background="@drawable/background_prec"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
