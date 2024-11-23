@@ -1,13 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+xmlns:tools="http://schemas.android.com/tools"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".ForecastFragment"
+android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ForecastFragment">
+    android:layout_height="wrap_content">
+    <EditText
+        android:id="@+id/text_search"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="90dp"
+        android:autofillHints="postalAddress"
+        android:background="@drawable/background_searchbar"
+        android:hint="Your address here"
+        android:inputType="textPostalAddress"
+        android:paddingStart="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/montsemibold"/>
+
+    <Button
+        android:id="@+id/search"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/background_searchbar"
+        android:backgroundTint="#76569A"
+        android:drawableLeft="@drawable/go"
+        android:paddingStart="15dp"
+        android:textColor="#ffffff"
+        app:backgroundTint="#76569A"
+        app:layout_constraintStart_toEndOf="@id/text_search"
+        app:layout_constraintTop_toTopOf="@id/text_search" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@+id/text_home"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/pcloudy" />
 
     <TextView
+        android:id="@+id/text_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/large_text" />
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/montbold"
+        android:text="--º"
+        android:textColor="#fff"
+        android:textSize="50sp"
+        app:layout_constraintEnd_toStartOf="@id/imageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imageView" />
+
+    <TextView
+        android:id="@+id/text_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="---"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@id/text_home"
+        app:layout_constraintTop_toBottomOf="@id/text_home"
+        android:fontFamily="@font/montsemibold"/>
+
+    <Switch
+        android:id="@+id/hrSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:layout_constraintBottom_toTopOf="@id/hourlyRecyclerView"
+        app:layout_constraintStart_toEndOf="@id/hourlytext"/>
+
+    <TextView
+        android:id="@+id/hourlytext"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/hrSwitch"
+        app:layout_constraintBottom_toBottomOf="@id/hrSwitch"
+        android:layout_marginStart="30dp"
+        android:text="Hourly"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:fontFamily="@font/montsemibold"/>
+    <TextView
+        android:id="@+id/dailytext"
+        app:layout_constraintStart_toEndOf="@id/hrSwitch"
+        app:layout_constraintTop_toTopOf="@id/hrSwitch"
+        app:layout_constraintBottom_toBottomOf="@id/hrSwitch"
+        android:text="Daily"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:fontFamily="@font/montsemibold"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/hourlyRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:overScrollMode="never"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_desc" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

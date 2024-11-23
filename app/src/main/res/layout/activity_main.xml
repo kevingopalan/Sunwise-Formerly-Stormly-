@@ -9,97 +9,15 @@
     android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
     tools:targetApi="o">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/main"
+    <FrameLayout
+        android:id="@+id/flFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/montreg"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
-
-        <EditText
-            android:id="@+id/text_search"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="90dp"
-            android:autofillHints="postalAddress"
-            android:background="@drawable/background_searchbar"
-            android:hint="Your address here"
-            android:inputType="textPostalAddress"
-            android:paddingStart="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/search"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="0dp"
-            android:background="@drawable/background_searchbar"
-            android:backgroundTint="#76569A"
-            android:drawableLeft="@drawable/go"
-            android:paddingStart="15dp"
-            android:textColor="#ffffff"
-            app:backgroundTint="#76569A"
-            app:layout_constraintStart_toEndOf="@id/text_search"
-            app:layout_constraintTop_toTopOf="@id/text_search" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="100dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toEndOf="@+id/text_home"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/pcloudy" />
-
-        <TextView
-            android:id="@+id/text_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="40dp"
-            android:fontFamily="@font/montsemibold"
-            android:text="--º"
-            android:textColor="#fff"
-            android:textSize="50sp"
-            app:layout_constraintEnd_toStartOf="@id/imageView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/imageView" />
-
-        <TextView
-            android:id="@+id/text_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="---"
-            android:textColor="#ffffff"
-            android:textSize="15sp"
-            app:layout_constraintStart_toStartOf="@id/text_home"
-            app:layout_constraintTop_toBottomOf="@id/text_home" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/hourlyRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:overScrollMode="never"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_desc" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
@@ -113,5 +31,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu"
         android:background="@drawable/background_hourly"
+        app:labelVisibilityMode="unlabeled"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
