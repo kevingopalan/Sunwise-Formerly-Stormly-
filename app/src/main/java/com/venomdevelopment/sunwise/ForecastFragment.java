@@ -31,6 +31,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ForecastFragment extends Fragment {
 
@@ -39,7 +41,7 @@ public class ForecastFragment extends Fragment {
     private static final String BASE_URL_POINTS = "https://api.weather.gov/points/";
     private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search?q=";
     private static final String USER_AGENT = "Mozilla/5.0";
-
+    public int formattime;
     private RequestQueue requestQueue;
     private TextView tempText, descText, humidityText;
     private EditText search;
@@ -167,24 +169,56 @@ public class ForecastFragment extends Fragment {
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
                                                 String temperature = current.getString("temperature");
                                                 String description = current.getString("shortForecast");
+                                                String icon;
                                                 new WeatherData(temperature, description);
                                                 WeatherData weatherHourlyData;
                                                 ArrayList<String> hourlyItems = new ArrayList<>();
+                                                ArrayList<String> hourlyTime = new ArrayList<>();
+                                                formattime = java.time.LocalTime.now().getHour();
                                                 for (int i = 0; i < 144; i++) {
                                                     current = properties.getJSONArray("periods").getJSONObject(i);
                                                     temperature = current.getString("temperature");
                                                     description = current.getString("shortForecast");
+                                                    if (description.toLowerCase().contains("snow")) {
+                                                        icon = "snow.png";
+                                                    }
+                                                    else if (description.toLowerCase().contains("rain") || description.toLowerCase().contains("showers")) {
+                                                        icon = "lrain.png";
+                                                    }
+                                                    else if (description.toLowerCase().contains("partly")) {
+                                                        icon = "pcloudy.png";
+                                                    }
+                                                    else if (description.toLowerCase().contains("sun")) {
+                                                        icon = "sunny.png";
+                                                    }
+                                                    else if (description.toLowerCase().contains("clear")) {
+                                                        icon = "clear.png";
+                                                    }
+                                                    else if (description.toLowerCase().contains("storm")) {
+                                                        icon = "tstorm.png";
+                                                    }
+                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust")) {
+                                                        icon = "wind.png";
+                                                    }
+                                                    else {
+                                                        icon = "cloudy.png";
+                                                    }
                                                     weatherHourlyData = new WeatherData(temperature, description);
                                                     if (i == 0) {
                                                         updateUI(weatherHourlyData);
                                                     }
                                                     hourlyItems.add(weatherHourlyData.getTemperature() + "°");
+                                                    formattime++;
+                                                    if (formattime > 23) {
+                                                        formattime = formattime - 24;
+                                                    }
+                                                    hourlyTime.add(formattime + ":00");
 
                                                     // set up the RecyclerView
                                                     RecyclerView recyclerView = getView().findViewById(R.id.hourlyRecyclerView);
                                                     recyclerView.setNestedScrollingEnabled(false);
                                                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                                                    adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems);
+                                                    adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyTime);
                                                     recyclerView.setAdapter(adapter);
                                                 }
                                             } catch (JSONException e) {

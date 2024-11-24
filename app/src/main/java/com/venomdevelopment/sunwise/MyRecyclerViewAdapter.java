@@ -14,13 +14,15 @@ import java.util.List;
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
     private final List<String> mData;
+    private final List<String> hrData;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    MyRecyclerViewAdapter(Context context, List<String> data) {
+    MyRecyclerViewAdapter(Context context, List<String> data, List<String> time) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
+        this.hrData = time;
     }
 
     // inflates the row layout from xml when needed
@@ -35,7 +37,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String hourlyForecast = mData.get(position);
+        String hourlyTime = hrData.get(position);
         holder.myTextView.setText(hourlyForecast);
+        holder.myHrView.setText(hourlyTime);
     }
 
     // total number of rows
@@ -48,10 +52,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView myTextView;
+        TextView myHrView;
 
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.tempTxt);
+            myHrView = itemView.findViewById(R.id.hourTxt);
             itemView.setOnClickListener(this);
         }
 
