@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,33 +73,41 @@ public class MainActivity extends AppCompatActivity
     ForecastFragment forecastFragment = new ForecastFragment();
     @SuppressLint("NonConstantResourceId")
     @Override
-    public boolean
-    onNavigationItemSelected(@NonNull MenuItem item)
-    {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         switch (item.getItemId()) {
             case R.id.menu:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, menuFragment)
-                        .commit();
-                return true;
+                if (!menuFragment.isAdded()) {
+                    transaction.add(R.id.flFragment, menuFragment, "menuFragment");
+                }
+                transaction.show(menuFragment)
+                        .hide(homeFragment)
+                        .hide(forecastFragment);
+                break;
 
             case R.id.home:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, homeFragment)
-                        .commit();
-                return true;
+                if (!homeFragment.isAdded()) {
+                    transaction.add(R.id.flFragment, homeFragment, "homeFragment");
+                }
+                transaction.show(homeFragment)
+                        .hide(menuFragment)
+                        .hide(forecastFragment);
+                break;
 
             case R.id.forecast:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, forecastFragment)
-                        .commit();
-                return true;
+                if (!forecastFragment.isAdded()) {
+                    transaction.add(R.id.flFragment, forecastFragment, "forecastFragment");
+                }
+                transaction.show(forecastFragment)
+                        .hide(menuFragment)
+                        .hide(homeFragment);
+                break;
         }
-        return false;
+
+        transaction.commit();
+        return true;
     }
 
     public static void setWindowFlag(Activity activity, final int bits, boolean on) {

@@ -53,6 +53,18 @@ android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayo
         app:srcCompat="@drawable/pcloudy" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montsemibold"
+        android:text="Forecast"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        android:textColor="#ffffff"
+        android:layout_marginTop="30dp"
+        android:textSize="30sp"
+        android:layout_marginStart="20dp"/>
+
+    <TextView
         android:id="@+id/text_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -114,7 +126,7 @@ android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayo
         android:id="@+id/hourlyRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="120dp"
         android:overScrollMode="never"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_desc" />

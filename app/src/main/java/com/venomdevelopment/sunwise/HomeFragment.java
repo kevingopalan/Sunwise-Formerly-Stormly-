@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,8 +42,9 @@ public class HomeFragment extends Fragment {
     private static final String USER_AGENT = "Mozilla/5.0";
 
     private RequestQueue requestQueue;
-    private TextView tempText, descText, humidityText;
+    private TextView tempText, descText, humidityText, uv, precipitation;
     private EditText search;
+    private ImageView mainimg;
     private Button searchButton;
     @Nullable
     @Override
@@ -53,6 +56,10 @@ public class HomeFragment extends Fragment {
         descText = v.findViewById(R.id.text_desc);
         search = v.findViewById(R.id.text_search);
         searchButton = v.findViewById(R.id.search);
+        humidityText = v.findViewById(R.id.humidity);
+        uv = v.findViewById(R.id.uv);
+        precipitation = v.findViewById(R.id.precipitation);
+        mainimg = v.findViewById(R.id.imageView);
         // Initialize Volley RequestQueue
         requestQueue = Volley.newRequestQueue(getContext());
 
@@ -132,7 +139,10 @@ public class HomeFragment extends Fragment {
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
                                                 String temperature = current.getString("temperature");
                                                 String description = current.getString("shortForecast");
-
+                                                double precipChance = current.optDouble("probabilityOfPrecipitation", 0);
+                                                double humidity = current.optDouble("humidity", 0);
+                                                Log.d("precip", String.valueOf(precipChance));
+                                                Log.d("humidity", String.valueOf(humidity));
                                                 WeatherData weatherData = new WeatherData(temperature, description);
                                                 //updateUI(weatherData);
                                             } catch (JSONException e) {
@@ -164,15 +174,48 @@ public class HomeFragment extends Fragment {
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
                                                 String temperature = current.getString("temperature");
                                                 String description = current.getString("shortForecast");
+                                                String icon;
+                                                int humidity = current.getJSONObject("relativeHumidity").getInt("value");
+                                                int precipitationProbability = current.getJSONObject("probabilityOfPrecipitation").getInt("value");
+                                                Log.d("precip", String.valueOf(precipitationProbability));
+                                                Log.d("humidity", String.valueOf(humidity));
+                                                humidityText.setText(humidity + "%");
+                                                precipitation.setText(precipitationProbability + "%");
                                                 new WeatherData(temperature, description);
                                                 WeatherData weatherHourlyData;
                                                 for (int i = 0; i < 144; i++) {
                                                     current = properties.getJSONArray("periods").getJSONObject(i);
                                                     temperature = current.getString("temperature");
                                                     description = current.getString("shortForecast");
+                                                    if (description.toLowerCase().contains("snow")) {
+                                                        icon = "snow";
+                                                    }
+                                                    else if (description.toLowerCase().contains("rain") || description.toLowerCase().contains("showers")) {
+                                                        icon = "lrain";
+                                                    }
+                                                    else if (description.toLowerCase().contains("partly")) {
+                                                        icon = "pcloudy";
+                                                    }
+                                                    else if (description.toLowerCase().contains("sun")) {
+                                                        icon = "sun";
+                                                    }
+                                                    else if (description.toLowerCase().contains("clear")) {
+                                                        icon = "clear";
+                                                    }
+                                                    else if (description.toLowerCase().contains("storm")) {
+                                                        icon = "tstorm";
+                                                    }
+                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust")) {
+                                                        icon = "wind";
+                                                    }
+                                                    else {
+                                                        icon = "clouds";
+                                                    }
                                                     weatherHourlyData = new WeatherData(temperature, description);
                                                     if (i == 0) {
                                                         updateUI(weatherHourlyData);
+                                                        Log.d("icon", icon);
+                                                        mainimg.setImageResource(getResources().getIdentifier(icon, "drawable", getContext().getPackageName()));
                                                     }
                                                 }
                                             } catch (JSONException e) {

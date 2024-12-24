@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="70dp">
     <LinearLayout
         android:id="@+id/text_hourlyhome"
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
         android:paddingEnd="10dp"
         android:paddingBottom="5dp"
         android:text="--º"
-        android:textColor="@color/md_theme_onBackground"
+        android:textColor="#fff"
         android:textSize="25sp"
         app:layout_constraintStart_toEndOf="@id/pic"
         app:layout_constraintTop_toTopOf="@id/text_hourlyhome"
@@ -49,7 +49,7 @@
         android:text="time"
         android:textAlignment="center"
         android:fontFamily="@font/montsemibold"
-        android:textColor="@color/md_theme_onBackground"
+        android:textColor="#fff"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@+id/text_hourlyhome"
         app:layout_constraintTop_toTopOf="@id/text_hourlyhome"
@@ -61,9 +61,9 @@
         android:padding="5dp"
         android:fontFamily="@font/montsemibold"
         android:layout_marginEnd="10dp"
-        android:text="50%"
+        android:text="--%"
         android:textAlignment="center"
-        android:textColor="@color/md_theme_onBackground"
+        android:textColor="#fff"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="@+id/text_hourlyhome"
         app:layout_constraintTop_toTopOf="@id/text_hourlyhome"
@@ -73,9 +73,34 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="30dp"
+        android:id="@+id/precimg"
         app:layout_constraintBottom_toBottomOf="@id/precipitationTxt"
         app:layout_constraintEnd_toStartOf="@id/precipitationTxt"
         app:layout_constraintTop_toTopOf="@id/precipitationTxt"
         android:src="@drawable/rainy_24px"
+        android:background="@drawable/background_precl"/>
+    <TextView
+        android:id="@+id/humidityTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:padding="5dp"
+        android:fontFamily="@font/montsemibold"
+        android:layout_marginEnd="10dp"
+        android:text="\?"
+        android:textAlignment="center"
+        android:textColor="#fff"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toStartOf="@+id/precimg"
+        app:layout_constraintTop_toTopOf="@id/text_hourlyhome"
+        app:layout_constraintBottom_toBottomOf="@id/text_hourlyhome"
         android:background="@drawable/background_prec"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="@id/precipitationTxt"
+        app:layout_constraintEnd_toStartOf="@id/humidityTxt"
+        app:layout_constraintTop_toTopOf="@id/precipitationTxt"
+        android:src="@drawable/humidity"
+        android:background="@drawable/background_precl"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

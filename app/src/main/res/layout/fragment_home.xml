@@ -76,5 +76,147 @@
             app:layout_constraintStart_toStartOf="@id/text_home"
             app:layout_constraintTop_toBottomOf="@id/text_home"
             android:fontFamily="@font/montsemibold"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageView"
+            android:id="@+id/basicinfo">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight=".3333333333333333333333333333333333333"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp"
+                    android:padding="10dp"
+                    android:background="@drawable/background_hourly"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/humidity"
+                        android:layout_gravity="top"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Humidity"
+                        android:fontFamily = "@font/montsemibold"
+                        android:textColor="#fff"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/humidity"
+                        android:text="--%"
+                        android:fontFamily = "@font/montbold"
+                        android:textColor="#fff"
+                        android:textAlignment="center"
+                        android:textSize="24sp"/>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight=".3333333333333333333333333333333333333"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:padding="10dp"
+                    android:background="@drawable/background_hourly">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/rainy_24px"
+                        android:layout_gravity="top"/>
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:layout_height="wrap_content"
+                        android:text="Precipitation"
+                        android:fontFamily = "@font/montsemibold"
+                        android:textColor="#fff"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/precipitation"
+                        android:text="--%"
+                        android:fontFamily = "@font/montbold"
+                        android:textColor="#fff"
+                        android:textAlignment="center"
+                        android:textSize="24sp"/>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight=".3333333333333333333333333333333333333"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:padding="10dp"
+                    android:background="@drawable/background_hourly">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_flare_24"
+                        android:layout_gravity="top"/>
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:layout_height="wrap_content"
+                        android:text="UV Index"
+                        android:fontFamily = "@font/montsemibold"
+                        android:textColor="#fff"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="--%"
+                        android:id="@+id/uv"
+                        android:fontFamily = "@font/montbold"
+                        android:textColor="#fff"
+                        android:textAlignment="center"
+                        android:textSize="24sp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:id="@+id/hourlygraph"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/basicinfo"
+            android:layout_margin="20dp"
+            android:background="@drawable/background_hourly">
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:id="@+id/dailygraph"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/hourlygraph"
+            android:layout_margin="20dp"
+            android:background="@drawable/background_hourly">
+
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

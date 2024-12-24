@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,11 +30,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class ForecastFragment extends Fragment {
 
@@ -42,10 +47,19 @@ public class ForecastFragment extends Fragment {
     private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search?q=";
     private static final String USER_AGENT = "Mozilla/5.0";
     public int formattime;
+    public int day;
+    public String dayshort;
     private RequestQueue requestQueue;
     private TextView tempText, descText, humidityText;
+    private ImageView mainimg;
     private EditText search;
     private Button searchButton;
+    private Switch hrSwitch;
+    private String forecastType;
+    private String dayset;
+    private String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+    public int currentDay;
     MyRecyclerViewAdapter adapter;
 
     @Nullable
@@ -56,6 +70,8 @@ public class ForecastFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_forecast, container, false);
         tempText = v.findViewById(R.id.text_home);
         descText = v.findViewById(R.id.text_desc);
+        hrSwitch = v.findViewById(R.id.hrSwitch);
+        mainimg = v.findViewById(R.id.imageView);
         search = v.findViewById(R.id.text_search);
         searchButton = v.findViewById(R.id.search);
         // Initialize Volley RequestQueue
@@ -64,6 +80,29 @@ public class ForecastFragment extends Fragment {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (hrSwitch.isChecked()) {
+                    forecastType = "";
+                }
+                else {
+                    forecastType = "Hourly";
+                }
+                String address = search.getText().toString().trim();
+                if (!address.isEmpty()) {
+                    fetchGeocodingData(address);
+                } else {
+                    Toast.makeText(getContext(), "Please enter an address", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        hrSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hrSwitch.isChecked()) {
+                    forecastType = "";
+                }
+                else {
+                    forecastType = "Hourly";
+                }
                 String address = search.getText().toString().trim();
                 if (!address.isEmpty()) {
                     fetchGeocodingData(address);
@@ -123,11 +162,10 @@ public class ForecastFragment extends Fragment {
                         try {
                             // Extract the forecast URL from the response
                             JSONObject properties = response.getJSONObject("properties");
-                            String forecastUrl = properties.getString("forecast");
-                            String forecastHourlyUrl = properties.getString("forecastHourly");
+                            String forecastUrl = properties.getString("forecast" + forecastType);
 
                             // Fetch weather data from the forecast URL
-                            JsonObjectRequest forecastRequest = new JsonObjectRequest
+                            JsonObjectRequest forecastHourlyRequest = new JsonObjectRequest
                                     (Request.Method.GET, forecastUrl, null, new Response.Listener<JSONObject>() {
                                         @Override
                                         public void onResponse(JSONObject response) {
@@ -137,12 +175,143 @@ public class ForecastFragment extends Fragment {
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
                                                 String temperature = current.getString("temperature");
                                                 String description = current.getString("shortForecast");
+                                                String humidity;
+                                                if (!hrSwitch.isChecked()) {
+                                                    humidity = current.getJSONObject("relativeHumidity").getInt("value") + "%";
+                                                } else {
+                                                    humidity = "?";
+                                                }
+                                                String precipitationProbability = current.getJSONObject("probabilityOfPrecipitation").getInt("value") + "";
+                                                Log.d("precip", precipitationProbability);
+                                                boolean daytime = current.getBoolean("isDaytime");
+                                                String icon;
+                                                new WeatherData(temperature, description);
+                                                WeatherData weatherHourlyData;
+                                                ArrayList<String> hourlyItems = new ArrayList<>();
+                                                ArrayList<String> hourlyTime = new ArrayList<>();
+                                                ArrayList<String> hourlyIcon = new ArrayList<>();
+                                                ArrayList<String> hourlyDay = new ArrayList<>();
+                                                ArrayList<String> hourlyPrecipitation = new ArrayList<>();
+                                                ArrayList<String> hourlyHumidity = new ArrayList<>();
+                                                formattime = java.time.LocalTime.now().getHour();
+                                                dayshort = LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEE"));
+                                                day = 0;
+                                                dayset = "no";
+                                                Log.d("currentday", dayshort);
+                                                Log.d("dayinarray", days[0]);
+                                                for (int i = 0; i < 7; i++) {
+                                                    if (day < 6) {
+                                                        day++;
+                                                    }
+                                                    else {
+                                                        day = 0;
+                                                    }
+                                                    if (Objects.equals(dayshort, days[day]) && !Objects.equals(dayset, "yes")) {
+                                                        currentDay = day;
+                                                        Log.d("firstdayset", days[currentDay]);
+                                                        dayset = "yes";
+                                                    }
 
-                                                WeatherData weatherData = new WeatherData(temperature, description);
-                                                //updateUI(weatherData);
+                                                }
+                                                for (int i = 0; i < 144; i++) {
+                                                    current = properties.getJSONArray("periods").getJSONObject(i);
+                                                    if (!hrSwitch.isChecked()) {
+                                                        humidity = current.getJSONObject("relativeHumidity").getInt("value") + "%";
+                                                    } else {
+                                                        humidity = "?";
+                                                    }
+                                                    precipitationProbability = String.valueOf(current.getJSONObject("probabilityOfPrecipitation").getInt("value"));
+                                                    if (precipitationProbability.isEmpty()) {
+                                                        precipitationProbability = "?";
+                                                    }
+                                                    if (humidity.isEmpty()) {
+                                                        humidity = "?";
+                                                    }
+                                                    if (forecastType.isEmpty()) {
+                                                        current = properties.getJSONArray("periods").getJSONObject(i);
+                                                    }
+                                                    if(dayset.equals("yes")) {
+                                                        Log.d("day", days[day]);
+                                                    }
+                                                    if (day < 6) {
+                                                        day++;
+                                                    }
+                                                    else {
+                                                        day = 0;
+                                                    }
+                                                    temperature = current.getString("temperature");
+                                                    description = current.getString("shortForecast");
+                                                    if (description.toLowerCase().contains("snow")) {
+                                                        icon = "snow";
+                                                    }
+                                                    else if (description.toLowerCase().contains("rain") || description.toLowerCase().contains("showers")) {
+                                                        icon = "lrain";
+                                                    }
+                                                    else if (description.toLowerCase().contains("partly")) {
+                                                        icon = "pcloudy";
+                                                    }
+                                                    else if (description.toLowerCase().contains("sun")) {
+                                                        icon = "sun";
+                                                    }
+                                                    else if (description.toLowerCase().contains("clear")) {
+                                                        icon = "clear";
+                                                    }
+                                                    else if (description.toLowerCase().contains("storm")) {
+                                                        icon = "tstorm";
+                                                    }
+                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust")) {
+                                                        icon = "wind";
+                                                    }
+                                                    else {
+                                                        icon = "clouds";
+                                                    }
+                                                    weatherHourlyData = new WeatherData(temperature, description);
+//                                                    if (i == 0) {
+//                                                        updateUI(weatherHourlyData);
+//                                                        Log.d("icon", icon);
+//                                                        mainimg.setImageResource(getResources().getIdentifier(icon, "drawable", getContext().getPackageName()));
+//                                                    }
+                                                    hourlyItems.add(weatherHourlyData.getTemperature() + "°");
+                                                    hourlyPrecipitation.add(precipitationProbability + "%");
+                                                    hourlyHumidity.add(humidity);
+                                                    formattime++;
+                                                    if (formattime > 23) {
+                                                        formattime = formattime - 24;
+                                                    }
+                                                    hourlyTime.add(formattime + ":00");
+                                                    if (daytime) {
+                                                        if (i == 0) {
+                                                            hourlyDay.add("Today");
+                                                            hourlyDay.add("Tonight");
+                                                        } else {
+                                                            hourlyDay.add(days[day]);
+                                                            hourlyDay.add(days[day] + ". Night");
+                                                        }
+
+                                                    } else {
+                                                        if (i == 0) {
+                                                            hourlyDay.add("Today");
+                                                        } else {
+                                                            hourlyDay.add(days[day] + ". Night");
+                                                        }
+                                                        hourlyDay.add(days[day]);
+                                                    }
+                                                    hourlyIcon.add(icon);
+
+                                                    // set up the RecyclerView
+                                                    RecyclerView recyclerView = getView().findViewById(R.id.hourlyRecyclerView);
+                                                    recyclerView.setNestedScrollingEnabled(false);
+                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                                                    if (hrSwitch.isChecked()) {
+                                                        adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyDay, hourlyIcon, hourlyPrecipitation, hourlyHumidity);
+                                                    } else {
+                                                        adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyTime, hourlyIcon, hourlyPrecipitation, hourlyHumidity);
+                                                    }
+                                                    recyclerView.setAdapter(adapter);
+                                                }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Toast.makeText(getContext(), "Error parsing weather data", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getContext(), "Something went wrong (If it still works, we just ran out of data. That's all.)", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     }, new Response.ErrorListener() {
@@ -159,8 +328,9 @@ public class ForecastFragment extends Fragment {
                                     return headers;
                                 }
                             };
-                            JsonObjectRequest forecastHourlyRequest = new JsonObjectRequest
-                                    (Request.Method.GET, forecastHourlyUrl, null, new Response.Listener<JSONObject>() {
+                            forecastUrl = properties.getString("forecastHourly");
+                            JsonObjectRequest forecastHourlyRequestTwo = new JsonObjectRequest
+                                    (Request.Method.GET, forecastUrl, null, new Response.Listener<JSONObject>() {
                                         @Override
                                         public void onResponse(JSONObject response) {
                                             try {
@@ -172,58 +342,48 @@ public class ForecastFragment extends Fragment {
                                                 String icon;
                                                 new WeatherData(temperature, description);
                                                 WeatherData weatherHourlyData;
-                                                ArrayList<String> hourlyItems = new ArrayList<>();
-                                                ArrayList<String> hourlyTime = new ArrayList<>();
                                                 formattime = java.time.LocalTime.now().getHour();
                                                 for (int i = 0; i < 144; i++) {
                                                     current = properties.getJSONArray("periods").getJSONObject(i);
+                                                    if (forecastType.isEmpty()) {
+                                                        current = properties.getJSONArray("periods").getJSONObject(i);
+                                                    }
                                                     temperature = current.getString("temperature");
                                                     description = current.getString("shortForecast");
                                                     if (description.toLowerCase().contains("snow")) {
-                                                        icon = "snow.png";
+                                                        icon = "snow";
                                                     }
                                                     else if (description.toLowerCase().contains("rain") || description.toLowerCase().contains("showers")) {
-                                                        icon = "lrain.png";
+                                                        icon = "lrain";
                                                     }
                                                     else if (description.toLowerCase().contains("partly")) {
-                                                        icon = "pcloudy.png";
+                                                        icon = "pcloudy";
                                                     }
                                                     else if (description.toLowerCase().contains("sun")) {
-                                                        icon = "sunny.png";
+                                                        icon = "sun";
                                                     }
                                                     else if (description.toLowerCase().contains("clear")) {
-                                                        icon = "clear.png";
+                                                        icon = "clear";
                                                     }
                                                     else if (description.toLowerCase().contains("storm")) {
-                                                        icon = "tstorm.png";
+                                                        icon = "tstorm";
                                                     }
                                                     else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust")) {
-                                                        icon = "wind.png";
+                                                        icon = "wind";
                                                     }
                                                     else {
-                                                        icon = "cloudy.png";
+                                                        icon = "clouds";
                                                     }
                                                     weatherHourlyData = new WeatherData(temperature, description);
                                                     if (i == 0) {
                                                         updateUI(weatherHourlyData);
+                                                        Log.d("icon", icon);
+                                                        mainimg.setImageResource(getResources().getIdentifier(icon, "drawable", getContext().getPackageName()));
                                                     }
-                                                    hourlyItems.add(weatherHourlyData.getTemperature() + "°");
-                                                    formattime++;
-                                                    if (formattime > 23) {
-                                                        formattime = formattime - 24;
-                                                    }
-                                                    hourlyTime.add(formattime + ":00");
-
-                                                    // set up the RecyclerView
-                                                    RecyclerView recyclerView = getView().findViewById(R.id.hourlyRecyclerView);
-                                                    recyclerView.setNestedScrollingEnabled(false);
-                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                                                    adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyTime);
-                                                    recyclerView.setAdapter(adapter);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Toast.makeText(getContext(), "Error parsing weather data", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getContext(), "Something went wrong (If it still works, we just ran out of data. That's all.)", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     }, new Response.ErrorListener() {
@@ -240,9 +400,8 @@ public class ForecastFragment extends Fragment {
                                     return headers;
                                 }
                             };
-
-                            requestQueue.add(forecastRequest);
                             requestQueue.add(forecastHourlyRequest);
+                            requestQueue.add(forecastHourlyRequestTwo);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getContext(), "Error parsing points data", Toast.LENGTH_SHORT).show();

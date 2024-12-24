@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,14 +16,21 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     private final List<String> mData;
     private final List<String> hrData;
+    private final List<String> icon;
+    private final List<String> mPrec;
+
+    private final List<String> mHumidity;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    MyRecyclerViewAdapter(Context context, List<String> data, List<String> time) {
+    MyRecyclerViewAdapter(Context context, List<String> data, List<String> time, List<String> icon, List<String> prec, List<String> humidity) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.hrData = time;
+        this.icon = icon;
+        this.mPrec = prec;
+        this.mHumidity = humidity;
     }
 
     // inflates the row layout from xml when needed
@@ -38,8 +46,14 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         String hourlyForecast = mData.get(position);
         String hourlyTime = hrData.get(position);
+        String micon = icon.get(position);
+        String prec = mPrec.get(position);
+        String humidity = mHumidity.get(position);
+        holder.myHumidity.setText(humidity);
         holder.myTextView.setText(hourlyForecast);
         holder.myHrView.setText(hourlyTime);
+        holder.myIcon.setImageResource(holder.itemView.getResources().getIdentifier(micon, "drawable", holder.itemView.getContext().getPackageName()));
+        holder.myPrec.setText(prec);
     }
 
     // total number of rows
@@ -53,11 +67,17 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView myTextView;
         TextView myHrView;
+        TextView myPrec;
+        ImageView myIcon;
+        TextView myHumidity;
 
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.tempTxt);
             myHrView = itemView.findViewById(R.id.hourTxt);
+            myIcon = itemView.findViewById(R.id.pic);
+            myPrec = itemView.findViewById(R.id.precipitationTxt);
+            myHumidity = itemView.findViewById(R.id.humidityTxt);
             itemView.setOnClickListener(this);
         }
 
