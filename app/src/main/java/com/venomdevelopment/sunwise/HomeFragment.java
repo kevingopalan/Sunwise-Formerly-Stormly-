@@ -1,5 +1,7 @@
 package com.venomdevelopment.sunwise;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +36,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -46,6 +51,7 @@ public class HomeFragment extends Fragment {
     private EditText search;
     private ImageView mainimg;
     private Button searchButton;
+    GraphView graphView;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -74,6 +80,41 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+        graphView = v.findViewById(R.id.hrGraphContent);
+
+        // on below line we are adding data to our graph view.
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
+                // on below line we are adding
+                // each point on our x and y axis.
+                new DataPoint(0, 1),
+                new DataPoint(1, 3),
+                new DataPoint(2, 4),
+                new DataPoint(3, 9),
+                new DataPoint(4, 6),
+                new DataPoint(5, 3),
+                new DataPoint(6, 6),
+                new DataPoint(7, 1),
+                new DataPoint(8, 4)
+        });
+
+        // after adding data to our line graph series.
+        // on below line we are setting
+        // title for our graph view.
+        graphView.setTitle("Hourly");
+
+        // on below line we are setting
+        // text color to our graph view.
+        graphView.setTitleColor(Color.parseColor("#FFFFFF"));
+        series.setColor(Color.parseColor("#FFFFFF"));
+
+        // on below line we are setting
+        // our title text size.
+        graphView.setTitleTextSize(50);
+        graphView.getGridLabelRenderer().setVerticalLabelsAlign(Paint.Align.LEFT);
+
+        // on below line we are adding
+        // data series to our graph view.
+        graphView.addSeries(series);
         return v;
     }
     private void fetchGeocodingData(String address) {
@@ -212,6 +253,29 @@ public class HomeFragment extends Fragment {
                                                         icon = "clouds";
                                                     }
                                                     weatherHourlyData = new WeatherData(temperature, description);
+                                                    // on below line we are adding data to our graph view.
+                                                    LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
+                                                            new DataPoint(i, Integer.parseInt(temperature))
+                                                    });
+
+                                                    // after adding data to our line graph series.
+                                                    // on below line we are setting
+                                                    // title for our graph view.
+                                                    graphView.setTitle("Hourly");
+
+                                                    // on below line we are setting
+                                                    // text color to our graph view.
+                                                    graphView.setTitleColor(Color.parseColor("#FFFFFF"));
+                                                    series.setColor(Color.parseColor("#FFFFFF"));
+
+                                                    // on below line we are setting
+                                                    // our title text size.
+                                                    graphView.setTitleTextSize(50);
+                                                    graphView.getGridLabelRenderer().setVerticalLabelsAlign(Paint.Align.LEFT);
+
+                                                    // on below line we are adding
+                                                    // data series to our graph view.
+                                                    graphView.addSeries(series);
                                                     if (i == 0) {
                                                         updateUI(weatherHourlyData);
                                                         Log.d("icon", icon);
