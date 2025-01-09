@@ -12,15 +12,16 @@
         <EditText
             android:id="@+id/text_search"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="90dp"
+            android:padding="16dp"
             android:autofillHints="postalAddress"
-            android:background="@drawable/background_searchbar"
+            android:background="@drawable/background_hourly"
             android:hint="Your address here"
+            android:textColor="#ffffff"
             android:inputType="textPostalAddress"
-            android:paddingStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -28,18 +29,18 @@
 
         <Button
             android:id="@+id/search"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="0dp"
-            android:background="@drawable/background_searchbar"
-            android:backgroundTint="#76569A"
+            android:background="@drawable/background_hourly"
+            android:backgroundTint="#FFFFFF"
             android:drawableLeft="@drawable/go"
-            android:paddingStart="15dp"
+            android:paddingStart="18dp"
             android:textColor="#ffffff"
-            app:backgroundTint="#76569A"
+            app:backgroundTint="#FFFFFF"
             app:layout_constraintStart_toEndOf="@id/text_search"
-            app:layout_constraintTop_toTopOf="@id/text_search" />
+            app:layout_constraintTop_toTopOf="@id/text_search"/>
 
         <ImageView
             android:id="@+id/imageView"
@@ -83,6 +84,7 @@
             android:weightSum="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageView"
+            android:layout_marginTop="40dp"
             android:id="@+id/basicinfo">
             <LinearLayout
                 android:layout_width="0dp"
@@ -209,7 +211,8 @@
                 android:id="@+id/hrGraphContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true" />
+                android:layout_alignParentTop="true"
+                android:fontFamily = "@font/montsemibold"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -219,8 +222,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/hourlygraph"
             android:layout_margin="20dp"
-            android:background="@drawable/background_hourly">
-
+            android:background="@drawable/background_hourly"
+            android:fontFamily = "@font/montsemibold">
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/dayGraphContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:fontFamily = "@font/montsemibold"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

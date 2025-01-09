@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/text_hourlyhome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="0dp"
+        android:background="@drawable/background_alert_warning"
+        android:textSize="50sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/baseline_warning_24"
+            android:text="Something went wrong"
+            android:drawablePadding="10dp"
+            android:layout_margin="12dp"
+            android:fontFamily="@font/montsemibold"
+            android:layout_marginBottom="30dp"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:gravity="center_vertical"
+            android:id="@+id/text_alertContent"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:scrollHorizontally="false" />
+
+        <TextView
+            android:id="@+id/text_alertDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:padding="10dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

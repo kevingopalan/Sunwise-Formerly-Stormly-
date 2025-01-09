@@ -1,0 +1,53 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="General">
+
+        <EditTextPreference
+            app:key="address"
+            app:title="Your Location"
+            app:useSimpleSummaryProvider="true" />
+        <SeekBarPreference
+            app:key="refreshtime"
+            app:title="Refresh forecast every (min):"
+            app:min="10"
+            app:showSeekBarValue="true" />
+            <SwitchPreferenceCompat
+                android:key="location"
+                android:summaryOff="The forecast is not based on your current location."
+                android:summaryOn="The forecast is based on your current location."
+                android:title="Location" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Notifications">
+
+        <SwitchPreferenceCompat
+            app:key="notifications"
+            app:title="Daily push notifications" />
+
+        <SwitchPreferenceCompat
+            app:dependency="notifications"
+            app:key="weathersummaries"
+            app:summaryOff="You will not receive notifications for alerts."
+            app:summaryOn="Get notifications for the weather each day."
+            app:title="Alerts" />
+
+        <SwitchPreferenceCompat
+            app:dependency="notifications"
+            app:key="weathersummaries"
+            app:summaryOff="You will not receive notifications for the weather for each day."
+            app:summaryOn="Get notifications for the weather each day."
+            app:title="Weather Summaries [PRO]" />
+
+    </PreferenceCategory>
+    <PreferenceCategory app:title="Units">
+        <ListPreference
+            app:defaultValue="us"
+            app:entries="@array/unit_entries"
+            app:entryValues="@array/unit_values"
+            app:key="reply"
+            app:title="Main Unit"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

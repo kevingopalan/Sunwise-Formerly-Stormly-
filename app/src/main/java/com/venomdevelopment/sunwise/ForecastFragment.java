@@ -1,5 +1,6 @@
 package com.venomdevelopment.sunwise;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,6 +62,20 @@ public class ForecastFragment extends Fragment {
 
     public int currentDay;
     MyRecyclerViewAdapter adapter;
+    public static final String myPref = "addressPref";
+
+    public String getPreferenceValue()
+    {
+        SharedPreferences sp = getActivity().getSharedPreferences(myPref,0);
+        String str = sp.getString("address","");
+        return str;
+    }
+    public void writeToPreference(String thePreference)
+    {
+        SharedPreferences.Editor editor = getActivity().getSharedPreferences(myPref,0).edit();
+        editor.putString("address", thePreference);
+        editor.commit();
+    }
 
     @Nullable
     @Override
@@ -89,11 +104,14 @@ public class ForecastFragment extends Fragment {
                 String address = search.getText().toString().trim();
                 if (!address.isEmpty()) {
                     fetchGeocodingData(address);
+                    writeToPreference(address);
                 } else {
                     Toast.makeText(getContext(), "Please enter an address", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        search.setText(getPreferenceValue(), TextView.BufferType.EDITABLE);
+        searchButton.performClick();
         hrSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

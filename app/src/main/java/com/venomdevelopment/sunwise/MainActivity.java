@@ -2,6 +2,7 @@ package com.venomdevelopment.sunwise;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         bottomNavigationView
                 = findViewById(R.id.bottomNavigationView);
@@ -76,13 +79,23 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-
+        // Hide the fragments
+        FragmentAlerts fragmentAlerts = (FragmentAlerts) fragmentManager.findFragmentByTag("FragmentAlerts");
+        if (fragmentAlerts != null) transaction.hide(fragmentAlerts);
+        SettingsFragment fragmentSettings = (SettingsFragment) fragmentManager.findFragmentByTag("FragmentSettings");
+        if (fragmentSettings != null) transaction.hide(fragmentSettings);
         switch (item.getItemId()) {
             case R.id.menu:
                 if (!menuFragment.isAdded()) {
                     transaction.add(R.id.flFragment, menuFragment, "menuFragment");
                 }
                 transaction.show(menuFragment)
+                        .setCustomAnimations(
+                                R.anim.slide_in_left,  // enter
+                                R.anim.fade_out,  // exit
+                                R.anim.fade_in,   // popEnter
+                                R.anim.slide_out_left  // popExit
+                        )
                         .hide(homeFragment)
                         .hide(forecastFragment);
                 break;
@@ -92,6 +105,12 @@ public class MainActivity extends AppCompatActivity
                     transaction.add(R.id.flFragment, homeFragment, "homeFragment");
                 }
                 transaction.show(homeFragment)
+                        .setCustomAnimations(
+                                R.anim.slide_in_top,  // enter
+                                R.anim.fade_out,  // exit
+                                R.anim.fade_in,   // popEnter
+                                R.anim.slide_out_top  // popExit
+                        )
                         .hide(menuFragment)
                         .hide(forecastFragment);
                 break;
@@ -101,6 +120,12 @@ public class MainActivity extends AppCompatActivity
                     transaction.add(R.id.flFragment, forecastFragment, "forecastFragment");
                 }
                 transaction.show(forecastFragment)
+                        .setCustomAnimations(
+                                R.anim.slide_in,  // enter
+                                R.anim.fade_out,  // exit
+                                R.anim.fade_in,   // popEnter
+                                R.anim.slide_out  // popExit
+                        )
                         .hide(menuFragment)
                         .hide(homeFragment);
                 break;
@@ -109,6 +134,7 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
         return true;
     }
+
 
     public static void setWindowFlag(Activity activity, final int bits, boolean on) {
         Window win = activity.getWindow();

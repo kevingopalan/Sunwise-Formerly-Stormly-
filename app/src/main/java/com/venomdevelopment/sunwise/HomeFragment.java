@@ -1,5 +1,6 @@
 package com.venomdevelopment.sunwise;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -14,6 +15,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.datastore.core.*;
+import androidx.datastore.preferences.core.Preferences;
+import androidx.datastore.preferences.rxjava3.RxPreferenceDataStoreBuilder;
+import androidx.datastore.rxjava3.RxDataStore;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -52,6 +58,24 @@ public class HomeFragment extends Fragment {
     private ImageView mainimg;
     private Button searchButton;
     GraphView graphView;
+    GraphView dayGraphView;
+
+    public static final String myPref = "addressPref";
+
+    public String getPreferenceValue()
+    {
+        SharedPreferences sp = getActivity().getSharedPreferences(myPref,0);
+        String str = sp.getString("address","");
+        return str;
+    }
+    public void writeToPreference(String thePreference)
+    {
+        SharedPreferences.Editor editor = getActivity().getSharedPreferences(myPref,0).edit();
+        editor.putString("address", thePreference);
+        editor.commit();
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -68,53 +92,24 @@ public class HomeFragment extends Fragment {
         mainimg = v.findViewById(R.id.imageView);
         // Initialize Volley RequestQueue
         requestQueue = Volley.newRequestQueue(getContext());
-
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String address = search.getText().toString().trim();
                 if (!address.isEmpty()) {
                     fetchGeocodingData(address);
+                    writeToPreference(address);
                 } else {
                     Toast.makeText(getContext(), "Please enter an address", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        search.setText(getPreferenceValue(), TextView.BufferType.EDITABLE);
+        if(!search.getText().toString().isEmpty()) {
+            searchButton.performClick();
+        }
         graphView = v.findViewById(R.id.hrGraphContent);
-
-        // on below line we are adding data to our graph view.
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                // on below line we are adding
-                // each point on our x and y axis.
-                new DataPoint(0, 1),
-                new DataPoint(1, 3),
-                new DataPoint(2, 4),
-                new DataPoint(3, 9),
-                new DataPoint(4, 6),
-                new DataPoint(5, 3),
-                new DataPoint(6, 6),
-                new DataPoint(7, 1),
-                new DataPoint(8, 4)
-        });
-
-        // after adding data to our line graph series.
-        // on below line we are setting
-        // title for our graph view.
-        graphView.setTitle("Hourly");
-
-        // on below line we are setting
-        // text color to our graph view.
-        graphView.setTitleColor(Color.parseColor("#FFFFFF"));
-        series.setColor(Color.parseColor("#FFFFFF"));
-
-        // on below line we are setting
-        // our title text size.
-        graphView.setTitleTextSize(50);
-        graphView.getGridLabelRenderer().setVerticalLabelsAlign(Paint.Align.LEFT);
-
-        // on below line we are adding
-        // data series to our graph view.
-        graphView.addSeries(series);
+        dayGraphView = v.findViewById(R.id.dayGraphContent);
         return v;
     }
     private void fetchGeocodingData(String address) {
@@ -185,6 +180,45 @@ public class HomeFragment extends Fragment {
                                                 Log.d("precip", String.valueOf(precipChance));
                                                 Log.d("humidity", String.valueOf(humidity));
                                                 WeatherData weatherData = new WeatherData(temperature, description);
+                                                LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
+                                                        new DataPoint(0, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(0).getString("temperature"))),
+                                                        new DataPoint(1, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2).getString("temperature"))),
+                                                        new DataPoint(2, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(4).getString("temperature"))),
+                                                        new DataPoint(3, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(6).getString("temperature"))),
+                                                        new DataPoint(4, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(8).getString("temperature"))),
+                                                        new DataPoint(5, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(10).getString("temperature"))),
+                                                        new DataPoint(6, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(12).getString("temperature"))),
+                                                });
+                                                LineGraphSeries<DataPoint> series2 = new LineGraphSeries<DataPoint>(new DataPoint[]{
+                                                        new DataPoint(0, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(1).getString("temperature"))),
+                                                        new DataPoint(1, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(3).getString("temperature"))),
+                                                        new DataPoint(2, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(5).getString("temperature"))),
+                                                        new DataPoint(3, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(7).getString("temperature"))),
+                                                        new DataPoint(4, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(9).getString("temperature"))),
+                                                        new DataPoint(5, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(11).getString("temperature"))),
+                                                        new DataPoint(6, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(13).getString("temperature"))),
+                                                });
+
+                                                // after adding data to our line graph series.
+                                                // on below line we are setting
+                                                // title for our graph view.
+                                                dayGraphView.setTitle("Daily");
+
+                                                // on below line we are setting
+                                                // text color to our graph view.
+                                                dayGraphView.setTitleColor(Color.parseColor("#FFFFFF"));
+                                                series.setColor(Color.parseColor("#FF5555"));
+                                                series2.setColor(Color.parseColor("#0000FF"));
+
+                                                // on below line we are setting
+                                                // our title text size.
+                                                dayGraphView.setTitleTextSize(50);
+                                                dayGraphView.getGridLabelRenderer().setVerticalLabelsAlign(Paint.Align.LEFT);
+
+                                                // on below line we are adding
+                                                // data series to our graph view.
+                                                dayGraphView.addSeries(series);
+                                                dayGraphView.addSeries(series2);
                                                 //updateUI(weatherData);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -224,6 +258,39 @@ public class HomeFragment extends Fragment {
                                                 precipitation.setText(precipitationProbability + "%");
                                                 new WeatherData(temperature, description);
                                                 WeatherData weatherHourlyData;
+                                                LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
+                                                        new DataPoint(0, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(0).getString("temperature"))),
+                                                        new DataPoint(1, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(1).getString("temperature"))),
+                                                        new DataPoint(2, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2).getString("temperature"))),
+                                                        new DataPoint(3, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(3).getString("temperature"))),
+                                                        new DataPoint(4, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(4).getString("temperature"))),
+                                                        new DataPoint(5, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(5).getString("temperature"))),
+                                                        new DataPoint(6, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(6).getString("temperature"))),
+                                                        new DataPoint(7, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(7).getString("temperature"))),
+                                                        new DataPoint(8, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(8).getString("temperature"))),
+                                                        new DataPoint(9, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(9).getString("temperature"))),
+                                                        new DataPoint(10, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(10).getString("temperature"))),
+                                                        new DataPoint(11, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(11).getString("temperature")))
+                                                });
+
+                                                // after adding data to our line graph series.
+                                                // on below line we are setting
+                                                // title for our graph view.
+                                                graphView.setTitle("Hourly");
+
+                                                // on below line we are setting
+                                                // text color to our graph view.
+                                                graphView.setTitleColor(Color.parseColor("#FFFFFF"));
+                                                series.setColor(Color.parseColor("#FFFFFF"));
+
+                                                // on below line we are setting
+                                                // our title text size.
+                                                graphView.setTitleTextSize(50);
+                                                graphView.getGridLabelRenderer().setVerticalLabelsAlign(Paint.Align.LEFT);
+
+                                                // on below line we are adding
+                                                // data series to our graph view.
+                                                graphView.addSeries(series);
                                                 for (int i = 0; i < 144; i++) {
                                                     current = properties.getJSONArray("periods").getJSONObject(i);
                                                     temperature = current.getString("temperature");
@@ -253,29 +320,6 @@ public class HomeFragment extends Fragment {
                                                         icon = "clouds";
                                                     }
                                                     weatherHourlyData = new WeatherData(temperature, description);
-                                                    // on below line we are adding data to our graph view.
-                                                    LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                                                            new DataPoint(i, Integer.parseInt(temperature))
-                                                    });
-
-                                                    // after adding data to our line graph series.
-                                                    // on below line we are setting
-                                                    // title for our graph view.
-                                                    graphView.setTitle("Hourly");
-
-                                                    // on below line we are setting
-                                                    // text color to our graph view.
-                                                    graphView.setTitleColor(Color.parseColor("#FFFFFF"));
-                                                    series.setColor(Color.parseColor("#FFFFFF"));
-
-                                                    // on below line we are setting
-                                                    // our title text size.
-                                                    graphView.setTitleTextSize(50);
-                                                    graphView.getGridLabelRenderer().setVerticalLabelsAlign(Paint.Align.LEFT);
-
-                                                    // on below line we are adding
-                                                    // data series to our graph view.
-                                                    graphView.addSeries(series);
                                                     if (i == 0) {
                                                         updateUI(weatherHourlyData);
                                                         Log.d("icon", icon);
