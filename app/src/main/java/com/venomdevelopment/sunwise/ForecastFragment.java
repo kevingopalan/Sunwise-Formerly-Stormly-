@@ -191,15 +191,15 @@ public class ForecastFragment extends Fragment {
                                                 // Parse the weather data
                                                 JSONObject properties = response.getJSONObject("properties");
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
-                                                String temperature = current.getString("temperature");
-                                                String description = current.getString("shortForecast");
+                                                String temperature = current.optString("temperature");
+                                                String description = current.optString("shortForecast");
                                                 String humidity;
                                                 if (!hrSwitch.isChecked()) {
                                                     humidity = current.getJSONObject("relativeHumidity").getInt("value") + "%";
                                                 } else {
-                                                    humidity = "?";
+                                                    humidity = "N/A";
                                                 }
-                                                String precipitationProbability = current.getJSONObject("probabilityOfPrecipitation").getInt("value") + "";
+                                                String precipitationProbability = current.getJSONObject("probabilityOfPrecipitation").optInt("value", 1013) + "";
                                                 Log.d("precip", precipitationProbability);
                                                 boolean daytime = current.getBoolean("isDaytime");
                                                 String icon;
@@ -234,16 +234,16 @@ public class ForecastFragment extends Fragment {
                                                 for (int i = 0; i < 144; i++) {
                                                     current = properties.getJSONArray("periods").getJSONObject(i);
                                                     if (!hrSwitch.isChecked()) {
-                                                        humidity = current.getJSONObject("relativeHumidity").getInt("value") + "%";
+                                                        humidity = current.getJSONObject("relativeHumidity").optInt("value") + "%";
                                                     } else {
-                                                        humidity = "?";
+                                                        humidity = "N/A";
                                                     }
-                                                    precipitationProbability = String.valueOf(current.getJSONObject("probabilityOfPrecipitation").getInt("value"));
-                                                    if (precipitationProbability.isEmpty()) {
-                                                        precipitationProbability = "?";
+                                                    precipitationProbability = String.valueOf(current.getJSONObject("probabilityOfPrecipitation").optInt("value", 1013));
+                                                    if (precipitationProbability.equals("1013")) {
+                                                        precipitationProbability = "N/A";
                                                     }
                                                     if (humidity.isEmpty()) {
-                                                        humidity = "?";
+                                                        humidity = "N/A";
                                                     }
                                                     if (forecastType.isEmpty()) {
                                                         current = properties.getJSONArray("periods").getJSONObject(i);
@@ -257,8 +257,8 @@ public class ForecastFragment extends Fragment {
                                                     else {
                                                         day = 0;
                                                     }
-                                                    temperature = current.getString("temperature");
-                                                    description = current.getString("shortForecast");
+                                                    temperature = current.optString("temperature");
+                                                    description = current.optString("shortForecast");
                                                     if (description.toLowerCase().contains("snow")) {
                                                         icon = "snow";
                                                     }

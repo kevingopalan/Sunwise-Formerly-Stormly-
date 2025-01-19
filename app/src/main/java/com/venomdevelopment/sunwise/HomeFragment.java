@@ -1,8 +1,13 @@
 package com.venomdevelopment.sunwise;
 
+import static com.venomdevelopment.sunwise.GraphViewUtils.setLabelTypeface;
+import static com.venomdevelopment.sunwise.GraphViewUtils.setTitleTypeface;
+
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +20,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.datastore.core.*;
 import androidx.datastore.preferences.core.Preferences;
 import androidx.datastore.preferences.rxjava3.RxPreferenceDataStoreBuilder;
@@ -37,12 +43,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -74,7 +82,6 @@ public class HomeFragment extends Fragment {
         editor.putString("address", thePreference);
         editor.commit();
     }
-
 
     @Nullable
     @Override
@@ -110,6 +117,18 @@ public class HomeFragment extends Fragment {
         }
         graphView = v.findViewById(R.id.hrGraphContent);
         dayGraphView = v.findViewById(R.id.dayGraphContent);
+        dayGraphView.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
+        graphView.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
+        graphView.getViewport().setXAxisBoundsManual(true);
+        dayGraphView.getViewport().setXAxisBoundsManual(true);
+        graphView.getViewport().setMinX(0);
+        graphView.getViewport().setMaxX(23);
+        dayGraphView.getViewport().setMinX(0);
+        dayGraphView.getViewport().setMaxX(6);
+        setLabelTypeface(getContext(), graphView, R.font.montsemibold);
+        setLabelTypeface(getContext(), dayGraphView, R.font.montsemibold);
+        setTitleTypeface(getContext(), graphView, R.font.montsemibold);
+        setTitleTypeface(getContext(), dayGraphView, R.font.montsemibold);
         return v;
     }
     private void fetchGeocodingData(String address) {
@@ -173,31 +192,31 @@ public class HomeFragment extends Fragment {
                                                 // Parse the weather data
                                                 JSONObject properties = response.getJSONObject("properties");
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
-                                                String temperature = current.getString("temperature");
-                                                String description = current.getString("shortForecast");
+                                                boolean daytime = current.getBoolean("isDaytime");
+                                                String temperature = current.optString("temperature");
+                                                String description = current.optString("shortForecast");
                                                 double precipChance = current.optDouble("probabilityOfPrecipitation", 0);
                                                 double humidity = current.optDouble("humidity", 0);
                                                 Log.d("precip", String.valueOf(precipChance));
                                                 Log.d("humidity", String.valueOf(humidity));
                                                 WeatherData weatherData = new WeatherData(temperature, description);
-                                                LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                                                        new DataPoint(0, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(0).getString("temperature"))),
-                                                        new DataPoint(1, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2).getString("temperature"))),
-                                                        new DataPoint(2, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(4).getString("temperature"))),
-                                                        new DataPoint(3, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(6).getString("temperature"))),
-                                                        new DataPoint(4, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(8).getString("temperature"))),
-                                                        new DataPoint(5, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(10).getString("temperature"))),
-                                                        new DataPoint(6, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(12).getString("temperature"))),
-                                                });
-                                                LineGraphSeries<DataPoint> series2 = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                                                        new DataPoint(0, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(1).getString("temperature"))),
-                                                        new DataPoint(1, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(3).getString("temperature"))),
-                                                        new DataPoint(2, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(5).getString("temperature"))),
-                                                        new DataPoint(3, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(7).getString("temperature"))),
-                                                        new DataPoint(4, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(9).getString("temperature"))),
-                                                        new DataPoint(5, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(11).getString("temperature"))),
-                                                        new DataPoint(6, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(13).getString("temperature"))),
-                                                });
+                                                LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
+                                                LineGraphSeries<DataPoint> series2 = new LineGraphSeries<>();
+                                                if (daytime) {
+                                                    for (int i = 0; i < 7; i++) {
+                                                        series.appendData(new DataPoint(i, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2 * i).getString("temperature"))), false, 7);
+                                                    }
+                                                    for (int i = 0; i < 7; i++) {
+                                                        series2.appendData(new DataPoint(i, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2*i+1).getString("temperature"))), false, 7);
+                                                    }
+                                                } else {
+                                                    for (int i = 0; i < 7; i++) {
+                                                        series.appendData(new DataPoint(i, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2 * i).getString("temperature"))), false, 7);
+                                                    }
+                                                    for (int i = 0; i < 7; i++) {
+                                                        series2.appendData(new DataPoint(i + 1, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2*i+1).getString("temperature"))), false, 7);
+                                                    }
+                                                }
 
                                                 // after adding data to our line graph series.
                                                 // on below line we are setting
@@ -207,8 +226,13 @@ public class HomeFragment extends Fragment {
                                                 // on below line we are setting
                                                 // text color to our graph view.
                                                 dayGraphView.setTitleColor(Color.parseColor("#FFFFFF"));
-                                                series.setColor(Color.parseColor("#FF5555"));
-                                                series2.setColor(Color.parseColor("#0000FF"));
+                                                if (daytime) {
+                                                    series.setColor(Color.parseColor("#FF5555"));
+                                                    series2.setColor(Color.parseColor("#0000FF"));
+                                                } else {
+                                                    series.setColor(Color.parseColor("#0000FF"));
+                                                    series2.setColor(Color.parseColor("#FF5555"));
+                                                }
 
                                                 // on below line we are setting
                                                 // our title text size.
@@ -258,20 +282,10 @@ public class HomeFragment extends Fragment {
                                                 precipitation.setText(precipitationProbability + "%");
                                                 new WeatherData(temperature, description);
                                                 WeatherData weatherHourlyData;
-                                                LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                                                        new DataPoint(0, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(0).getString("temperature"))),
-                                                        new DataPoint(1, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(1).getString("temperature"))),
-                                                        new DataPoint(2, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(2).getString("temperature"))),
-                                                        new DataPoint(3, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(3).getString("temperature"))),
-                                                        new DataPoint(4, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(4).getString("temperature"))),
-                                                        new DataPoint(5, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(5).getString("temperature"))),
-                                                        new DataPoint(6, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(6).getString("temperature"))),
-                                                        new DataPoint(7, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(7).getString("temperature"))),
-                                                        new DataPoint(8, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(8).getString("temperature"))),
-                                                        new DataPoint(9, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(9).getString("temperature"))),
-                                                        new DataPoint(10, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(10).getString("temperature"))),
-                                                        new DataPoint(11, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(11).getString("temperature")))
-                                                });
+                                                LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
+                                                for (int i = 0; i < 24; i++) {
+                                                    series.appendData(new DataPoint(i, Double.parseDouble(properties.getJSONArray("periods").getJSONObject(i).getString("temperature"))), false, 24);
+                                                }
 
                                                 // after adding data to our line graph series.
                                                 // on below line we are setting
