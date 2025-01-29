@@ -137,6 +137,10 @@ public class FragmentAlerts extends Fragment {
                                     type = "watch";
                                 } else if (event.toLowerCase().contains("warning")) {
                                     type = "warning";
+                                } else if (event.toLowerCase().contains("advisory")) {
+                                    type = "advisory";
+                                } else {
+                                    type = "unknown";
                                 }
                                 alertHeadlines.add(event);
                                 alertTypes.add(type);

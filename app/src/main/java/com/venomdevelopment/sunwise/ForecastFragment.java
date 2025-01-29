@@ -225,6 +225,7 @@ public class ForecastFragment extends Fragment {
                                                         day = 0;
                                                     }
                                                     if (Objects.equals(dayshort, days[day]) && !Objects.equals(dayset, "yes")) {
+
                                                         currentDay = day;
                                                         Log.d("firstdayset", days[currentDay]);
                                                         dayset = "yes";

@@ -50,6 +50,8 @@ public class AlertsRecyclerViewAdapter extends RecyclerView.Adapter<AlertsRecycl
             holder.textAlertContent.setText("Warning: " + alertContent);
         } else if ("Watch".equalsIgnoreCase(alertType)) {
             holder.textAlertContent.setText("Watch: " + alertContent);
+        } else if ("Advisory".equalsIgnoreCase(alertType)) {
+            holder.textAlertContent.setText("Advisory: " + alertContent);
         } else {
             holder.textAlertContent.setText("Unknown: " + alertContent);
         }

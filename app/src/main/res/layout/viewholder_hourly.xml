@@ -10,7 +10,7 @@
         android:layout_height="50dp"
         android:layout_margin="20dp"
         android:layout_marginBottom="0dp"
-        android:background="@drawable/background_hourly"
+        android:background="@drawable/main_background"
         android:textSize="50sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
