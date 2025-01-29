@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
     private static final String USER_AGENT = "Mozilla/5.0";
 
     private RequestQueue requestQueue;
-    private TextView tempText, descText, humidityText, uv, precipitation;
+    private TextView tempText, descText, humidityText, wind, precipitation;
     private EditText search;
     private ImageView mainimg;
     private Button searchButton;
@@ -94,7 +94,7 @@ public class HomeFragment extends Fragment {
         search = v.findViewById(R.id.text_search);
         searchButton = v.findViewById(R.id.search);
         humidityText = v.findViewById(R.id.humidity);
-        uv = v.findViewById(R.id.uv);
+        wind = v.findViewById(R.id.wind);
         precipitation = v.findViewById(R.id.precipitation);
         mainimg = v.findViewById(R.id.imageView);
         // Initialize Volley RequestQueue

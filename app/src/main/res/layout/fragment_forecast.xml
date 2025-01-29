@@ -93,6 +93,7 @@ android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayo
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@id/hourlyRecyclerView"
         app:layout_constraintStart_toEndOf="@id/hourlytext"/>
 
@@ -124,8 +125,12 @@ android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayo
         android:id="@+id/hourlyRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="140dp"
         android:overScrollMode="never"
+        android:background="@drawable/main_background"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_desc" />
 </androidx.constraintlayout.widget.ConstraintLayout>

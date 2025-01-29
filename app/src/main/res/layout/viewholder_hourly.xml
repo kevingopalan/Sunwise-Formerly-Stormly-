@@ -3,14 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="70dp">
+    android:layout_height="50dp">
     <LinearLayout
         android:id="@+id/text_hourlyhome"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_margin="20dp"
+        android:layout_marginTop="0dp"
         android:layout_marginBottom="0dp"
-        android:background="@drawable/main_background"
         android:textSize="50sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -101,6 +100,12 @@
         app:layout_constraintBottom_toBottomOf="@id/precipitationTxt"
         app:layout_constraintEnd_toStartOf="@id/humidityTxt"
         app:layout_constraintTop_toTopOf="@id/precipitationTxt"
-        android:src="@drawable/humidity"
+        android:src="@drawable/humidityicon"
         android:background="@drawable/background_precl"/>
+    <View
+        android:layout_width="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0.5dp"
+        android:background="@android:color/darker_gray"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
