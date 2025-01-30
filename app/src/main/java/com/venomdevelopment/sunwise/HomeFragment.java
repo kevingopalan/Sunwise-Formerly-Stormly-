@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -63,7 +64,7 @@ public class HomeFragment extends Fragment {
     private RequestQueue requestQueue;
     private TextView tempText, descText, humidityText, wind, precipitation;
     private EditText search;
-    private ImageView mainimg;
+    private LottieAnimationView animationView;
     private Button searchButton;
     GraphView graphView;
     GraphView dayGraphView;
@@ -92,11 +93,11 @@ public class HomeFragment extends Fragment {
         tempText = v.findViewById(R.id.text_home);
         descText = v.findViewById(R.id.text_desc);
         search = v.findViewById(R.id.text_search);
+        animationView = v.findViewById(R.id.animation_view);
         searchButton = v.findViewById(R.id.search);
         humidityText = v.findViewById(R.id.humidity);
         wind = v.findViewById(R.id.wind);
         precipitation = v.findViewById(R.id.precipitation);
-        mainimg = v.findViewById(R.id.imageView);
         // Initialize Volley RequestQueue
         requestQueue = Volley.newRequestQueue(getContext());
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -273,7 +274,9 @@ public class HomeFragment extends Fragment {
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
                                                 String temperature = current.getString("temperature");
                                                 String description = current.getString("shortForecast");
+                                                Boolean daytime = current.getBoolean("isDaytime");
                                                 String icon;
+                                                String lottieAnim;
                                                 int humidity = current.getJSONObject("relativeHumidity").getInt("value");
                                                 int precipitationProbability = current.getJSONObject("probabilityOfPrecipitation").getInt("value");
                                                 Log.d("precip", String.valueOf(precipitationProbability));
@@ -301,7 +304,7 @@ public class HomeFragment extends Fragment {
                                                 // our title text size.
                                                 graphView.setTitleTextSize(50);
                                                 graphView.getGridLabelRenderer().setVerticalLabelsAlign(Paint.Align.LEFT);
-
+                                                String prefix;
                                                 // on below line we are adding
                                                 // data series to our graph view.
                                                 graphView.addSeries(series);
@@ -309,35 +312,57 @@ public class HomeFragment extends Fragment {
                                                     current = properties.getJSONArray("periods").getJSONObject(i);
                                                     temperature = current.getString("temperature");
                                                     description = current.getString("shortForecast");
+                                                    if (daytime) {
+                                                        prefix = "_day";
+                                                    } else {
+                                                        prefix = "_night";
+                                                    }
                                                     if (description.toLowerCase().contains("snow")) {
                                                         icon = "snow";
+                                                        lottieAnim = "snow";
                                                     }
                                                     else if (description.toLowerCase().contains("rain") || description.toLowerCase().contains("showers")) {
                                                         icon = "lrain";
+                                                        lottieAnim = "rain";
                                                     }
                                                     else if (description.toLowerCase().contains("partly")) {
                                                         icon = "pcloudy";
+                                                        lottieAnim = "partly_cloudy" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("sun")) {
                                                         icon = "sun";
+                                                        lottieAnim = "clear" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("clear")) {
                                                         icon = "clear";
+                                                        lottieAnim = "clear" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("storm")) {
                                                         icon = "tstorm";
+                                                        lottieAnim = "thunderstorms" + prefix;
                                                     }
-                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust")) {
+                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust") || description.toLowerCase().contains("blow")) {
                                                         icon = "wind";
+                                                        lottieAnim = "wind";
+                                                    } else if (description.toLowerCase().contains("fog")) {
+                                                        icon = "clouds";
+                                                        lottieAnim = "fog";
+                                                    } else if (description.toLowerCase().contains("haze")) {
+                                                        icon = "clouds";
+                                                        lottieAnim = "haze";
                                                     }
                                                     else {
                                                         icon = "clouds";
+                                                        lottieAnim = "cloudy";
                                                     }
                                                     weatherHourlyData = new WeatherData(temperature, description);
                                                     if (i == 0) {
                                                         updateUI(weatherHourlyData);
                                                         Log.d("icon", icon);
-                                                        mainimg.setImageResource(getResources().getIdentifier(icon, "drawable", getContext().getPackageName()));
+                                                        Log.d("lottie", "Lottie icon: " + lottieAnim);
+                                                        animationView.setAnimation(getResources().getIdentifier(lottieAnim, "raw", getContext().getPackageName()));
+                                                        animationView.loop(true);
+                                                        animationView.playAnimation();
                                                     }
                                                 }
                                             } catch (JSONException e) {
