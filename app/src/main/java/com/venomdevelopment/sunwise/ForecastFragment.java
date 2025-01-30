@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -48,6 +49,7 @@ public class ForecastFragment extends Fragment {
     private static final String BASE_URL_POINTS = "https://api.weather.gov/points/";
     private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search?q=";
     private static final String USER_AGENT = "Mozilla/5.0";
+    private LottieAnimationView animationView;
     public int formattime;
     public int day;
     public String dayshort;
@@ -87,8 +89,8 @@ public class ForecastFragment extends Fragment {
         tempText = v.findViewById(R.id.text_home);
         descText = v.findViewById(R.id.text_desc);
         hrSwitch = v.findViewById(R.id.hrSwitch);
-        mainimg = v.findViewById(R.id.imageView);
         search = v.findViewById(R.id.text_search);
+        animationView = v.findViewById(R.id.animation_view);
         searchButton = v.findViewById(R.id.search);
         // Initialize Volley RequestQueue
         requestQueue = Volley.newRequestQueue(getContext());
@@ -212,6 +214,10 @@ public class ForecastFragment extends Fragment {
                                                 ArrayList<String> hourlyDay = new ArrayList<>();
                                                 ArrayList<String> hourlyPrecipitation = new ArrayList<>();
                                                 ArrayList<String> hourlyHumidity = new ArrayList<>();
+                                                ArrayList<String> lottieAnimList = new ArrayList<>();
+                                                ArrayList<String> descList = new ArrayList<>();
+                                                String lottieAnim;
+                                                String prefix;
                                                 formattime = java.time.LocalTime.now().getHour();
                                                 dayshort = LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEE"));
                                                 day = 0;
@@ -261,39 +267,59 @@ public class ForecastFragment extends Fragment {
                                                     }
                                                     temperature = current.optString("temperature");
                                                     description = current.optString("shortForecast");
+                                                    if (daytime) {
+                                                        prefix = "_day";
+                                                    } else {
+                                                        prefix = "_night";
+                                                    }
                                                     if (description.toLowerCase().contains("snow")) {
                                                         icon = "snow";
+                                                        lottieAnim = "snow";
                                                     }
                                                     else if (description.toLowerCase().contains("rain") || description.toLowerCase().contains("showers")) {
                                                         icon = "lrain";
+                                                        lottieAnim = "rain";
                                                     }
                                                     else if (description.toLowerCase().contains("partly")) {
                                                         icon = "pcloudy";
+                                                        lottieAnim = "partly_cloudy" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("sun")) {
                                                         icon = "sun";
+                                                        lottieAnim = "clear" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("clear")) {
                                                         icon = "clear";
+                                                        lottieAnim = "clear" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("storm")) {
                                                         icon = "tstorm";
+                                                        lottieAnim = "thunderstorms" + prefix;
                                                     }
-                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust")) {
+                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust") || description.toLowerCase().contains("blow")) {
                                                         icon = "wind";
+                                                        lottieAnim = "wind";
+                                                    } else if (description.toLowerCase().contains("fog")) {
+                                                        icon = "clouds";
+                                                        lottieAnim = "fog";
+                                                    } else if (description.toLowerCase().contains("haze")) {
+                                                        icon = "clouds";
+                                                        lottieAnim = "haze";
                                                     }
                                                     else {
                                                         icon = "clouds";
+                                                        lottieAnim = "cloudy";
                                                     }
                                                     weatherHourlyData = new WeatherData(temperature, description);
 //                                                    if (i == 0) {
 //                                                        updateUI(weatherHourlyData);
 //                                                        Log.d("icon", icon);
-//                                                        mainimg.setImageResource(getResources().getIdentifier(icon, "drawable", getContext().getPackageName()));
 //                                                    }
                                                     hourlyItems.add(weatherHourlyData.getTemperature() + "°");
                                                     hourlyPrecipitation.add(precipitationProbability + "%");
                                                     hourlyHumidity.add(humidity);
+                                                    lottieAnimList.add(lottieAnim);
+                                                    descList.add(description);
                                                     formattime++;
                                                     if (formattime > 23) {
                                                         formattime = formattime - 24;
@@ -323,9 +349,9 @@ public class ForecastFragment extends Fragment {
                                                     recyclerView.setNestedScrollingEnabled(false);
                                                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                                                     if (hrSwitch.isChecked()) {
-                                                        adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyDay, hourlyIcon, hourlyPrecipitation, hourlyHumidity);
+                                                        adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyDay, hourlyIcon, hourlyPrecipitation, hourlyHumidity, lottieAnimList, descList);
                                                     } else {
-                                                        adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyTime, hourlyIcon, hourlyPrecipitation, hourlyHumidity);
+                                                        adapter = new MyRecyclerViewAdapter(getContext(), hourlyItems, hourlyTime, hourlyIcon, hourlyPrecipitation, hourlyHumidity, lottieAnimList, descList);
                                                     }
                                                     recyclerView.setAdapter(adapter);
                                                 }
@@ -363,6 +389,8 @@ public class ForecastFragment extends Fragment {
                                                 new WeatherData(temperature, description);
                                                 WeatherData weatherHourlyData;
                                                 formattime = java.time.LocalTime.now().getHour();
+                                                String lottieAnim;
+                                                String prefix;
                                                 for (int i = 0; i < 144; i++) {
                                                     current = properties.getJSONArray("periods").getJSONObject(i);
                                                     if (forecastType.isEmpty()) {
@@ -370,35 +398,57 @@ public class ForecastFragment extends Fragment {
                                                     }
                                                     temperature = current.getString("temperature");
                                                     description = current.getString("shortForecast");
+                                                    boolean daytime = current.getBoolean("isDaytime");
+                                                    if (daytime) {
+                                                        prefix = "_day";
+                                                    } else {
+                                                        prefix = "_night";
+                                                    }
                                                     if (description.toLowerCase().contains("snow")) {
                                                         icon = "snow";
+                                                        lottieAnim = "snow";
                                                     }
                                                     else if (description.toLowerCase().contains("rain") || description.toLowerCase().contains("showers")) {
                                                         icon = "lrain";
+                                                        lottieAnim = "rain";
                                                     }
                                                     else if (description.toLowerCase().contains("partly")) {
                                                         icon = "pcloudy";
+                                                        lottieAnim = "partly_cloudy" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("sun")) {
                                                         icon = "sun";
+                                                        lottieAnim = "clear" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("clear")) {
                                                         icon = "clear";
+                                                        lottieAnim = "clear" + prefix;
                                                     }
                                                     else if (description.toLowerCase().contains("storm")) {
                                                         icon = "tstorm";
+                                                        lottieAnim = "thunderstorms" + prefix;
                                                     }
-                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust")) {
+                                                    else if (description.toLowerCase().contains("wind") || description.toLowerCase().contains("gale") || description.toLowerCase().contains("dust") || description.toLowerCase().contains("blow")) {
                                                         icon = "wind";
+                                                        lottieAnim = "wind";
+                                                    } else if (description.toLowerCase().contains("fog")) {
+                                                        icon = "clouds";
+                                                        lottieAnim = "fog";
+                                                    } else if (description.toLowerCase().contains("haze")) {
+                                                        icon = "clouds";
+                                                        lottieAnim = "haze";
                                                     }
                                                     else {
                                                         icon = "clouds";
+                                                        lottieAnim = "cloudy";
                                                     }
                                                     weatherHourlyData = new WeatherData(temperature, description);
                                                     if (i == 0) {
                                                         updateUI(weatherHourlyData);
                                                         Log.d("icon", icon);
-                                                        mainimg.setImageResource(getResources().getIdentifier(icon, "drawable", getContext().getPackageName()));
+                                                        animationView.setAnimation(getResources().getIdentifier(lottieAnim, "raw", getContext().getPackageName()));
+                                                        animationView.loop(true);
+                                                        animationView.playAnimation();
                                                     }
                                                 }
                                             } catch (JSONException e) {

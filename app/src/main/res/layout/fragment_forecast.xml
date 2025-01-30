@@ -14,12 +14,12 @@ android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayo
         android:id="@+id/text_search"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:textColor="#ffffff"
         android:layout_marginEnd="56dp"
         android:padding="16dp"
         android:autofillHints="postalAddress"
         android:background="@drawable/bottomnav"
         android:hint="Your address here"
+        android:textColor="#ffffff"
         android:inputType="textPostalAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,46 +35,37 @@ android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayo
         android:backgroundTint="#FFFFFF"
         android:drawableLeft="@drawable/go"
         android:paddingStart="18dp"
-        android:textColor="#333"
-        app:backgroundTint="#333"
+        android:textColor="#222"
+        app:backgroundTint="#222"
         app:layout_constraintStart_toEndOf="@id/text_search"
         app:layout_constraintTop_toTopOf="@id/text_search"/>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintStart_toEndOf="@+id/text_home"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/pcloudy" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/montsemibold"
-        android:text="Forecast"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
-        android:textColor="#ffffff"
-        android:layout_marginTop="30dp"
-        android:textSize="30sp"
-        android:layout_marginStart="20dp"/>
+        android:layout_marginEnd="30dp"
+        app:layout_constraintHeight="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_home"
+        app:layout_constraintWidth="80dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/clear_day" />
 
     <TextView
         android:id="@+id/text_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
         android:fontFamily="@font/montbold"
         android:text="--º"
         android:textColor="#fff"
-        android:textSize="50sp"
-        app:layout_constraintEnd_toStartOf="@id/imageView"
+        android:textSize="56sp"
+        android:layout_marginTop="120dp"
+        android:layout_marginStart="30dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/imageView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_desc"
@@ -84,7 +75,8 @@ android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayo
         android:text="---"
         android:textColor="#ffffff"
         android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="@id/text_home"
+        android:layout_marginStart="30dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_home"
         android:fontFamily="@font/montsemibold"/>
 

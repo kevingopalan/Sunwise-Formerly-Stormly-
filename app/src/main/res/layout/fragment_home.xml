@@ -34,8 +34,8 @@
             android:backgroundTint="#FFFFFF"
             android:drawableLeft="@drawable/go"
             android:paddingStart="18dp"
-            android:textColor="#333"
-            app:backgroundTint="#333"
+            android:textColor="#222"
+            app:backgroundTint="#222"
             app:layout_constraintStart_toEndOf="@id/text_search"
             app:layout_constraintTop_toTopOf="@id/text_search"/>
 
@@ -44,12 +44,12 @@
             android:id="@+id/animation_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:layout_marginTop="140dp"
-            app:layout_constraintHeight="70dp"
+            android:layout_marginTop="120dp"
+            app:layout_constraintHeight="80dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth="70dp"
+            app:layout_constraintWidth="80dp"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/clear_day" />
@@ -58,13 +58,13 @@
             android:id="@+id/text_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
             android:fontFamily="@font/montbold"
             android:text="--º"
             android:textColor="#fff"
-            android:textSize="50sp"
+            android:textSize="72sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/animation_view" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/animation_view" />
 
         <TextView
             android:id="@+id/text_desc"
@@ -74,7 +74,8 @@
             android:text="---"
             android:textColor="#ffffff"
             android:textSize="15sp"
-            app:layout_constraintStart_toStartOf="@id/text_home"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_home"
             android:fontFamily="@font/montsemibold"/>
 
@@ -82,10 +83,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1"
-            android:layout_margin="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_desc"
-            android:layout_marginTop="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="60dp"
             android:id="@+id/basicinfo"
             android:background="@drawable/main_background">
             <LinearLayout
@@ -173,7 +175,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/baseline_flare_24"
+                        android:src="@drawable/baseline_wind_24"
                         android:layout_gravity="top"/>
                     <TextView
                         android:layout_marginTop="10dp"

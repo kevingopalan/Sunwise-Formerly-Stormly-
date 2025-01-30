@@ -1,5 +1,5 @@
 <resources>
-    <color name="statusbarcolor">#333333</color>
+    <color name="statusbarcolor">#222222</color>
     <color name="md_theme_primary">#94CDF6</color>
     <color name="md_theme_onPrimary">#00344D</color>
     <color name="md_theme_primaryContainer">#004C6D</color>

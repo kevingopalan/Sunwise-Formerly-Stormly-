@@ -272,8 +272,9 @@ public class HomeFragment extends Fragment {
                                                 // Parse the weather data
                                                 JSONObject properties = response.getJSONObject("properties");
                                                 JSONObject current = properties.getJSONArray("periods").getJSONObject(0);
-                                                String temperature = current.getString("temperature");
-                                                String description = current.getString("shortForecast");
+                                                String temperature = current.optString("temperature");
+                                                String description = current.optString("shortForecast");
+                                                String windspeed = current.optString("windSpeed");
                                                 Boolean daytime = current.getBoolean("isDaytime");
                                                 String icon;
                                                 String lottieAnim;
@@ -363,6 +364,7 @@ public class HomeFragment extends Fragment {
                                                         animationView.setAnimation(getResources().getIdentifier(lottieAnim, "raw", getContext().getPackageName()));
                                                         animationView.loop(true);
                                                         animationView.playAnimation();
+                                                        wind.setText(windspeed);
                                                     }
                                                 }
                                             } catch (JSONException e) {

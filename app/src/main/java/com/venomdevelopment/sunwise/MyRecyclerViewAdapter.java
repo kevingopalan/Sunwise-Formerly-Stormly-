@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.List;
 
@@ -18,19 +21,24 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private final List<String> hrData;
     private final List<String> icon;
     private final List<String> mPrec;
+    private final List<String> mdesc;
+    private final List<String> lottieAnim;
+    private boolean toggled = false;
 
     private final List<String> mHumidity;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    MyRecyclerViewAdapter(Context context, List<String> data, List<String> time, List<String> icon, List<String> prec, List<String> humidity) {
+    MyRecyclerViewAdapter(Context context, List<String> data, List<String> time, List<String> icon, List<String> prec, List<String> humidity, List<String> lottieAnimL, List<String> desc) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.hrData = time;
         this.icon = icon;
         this.mPrec = prec;
         this.mHumidity = humidity;
+        this.lottieAnim = lottieAnimL;
+        this.mdesc = desc;
     }
 
     // inflates the row layout from xml when needed
@@ -46,14 +54,31 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         String hourlyForecast = mData.get(position);
         String hourlyTime = hrData.get(position);
-        String micon = icon.get(position);
         String prec = mPrec.get(position);
         String humidity = mHumidity.get(position);
+        String lottieAnimString = lottieAnim.get(position);
+        String descstring = mdesc.get(position);
         holder.myHumidity.setText(humidity);
         holder.myTextView.setText(hourlyForecast);
         holder.myHrView.setText(hourlyTime);
-        holder.myIcon.setImageResource(holder.itemView.getResources().getIdentifier(micon, "drawable", holder.itemView.getContext().getPackageName()));
+        holder.descTxt.setText(descstring);
+        holder.arrow.setImageResource(R.drawable.baseline_keyboard_arrow_down_24);
+        holder.animationView.setAnimation(holder.itemView.getResources().getIdentifier(lottieAnimString, "raw", holder.itemView.getContext().getPackageName()));
+        holder.animationView.loop(true);
+        holder.animationView.playAnimation();
         holder.myPrec.setText(prec);
+
+        holder.precLayout.setVisibility(View.GONE);
+        holder.itemView.setOnClickListener(v -> {
+            toggled = !toggled;
+            if (toggled) {
+                holder.precLayout.setVisibility(View.VISIBLE);
+                holder.arrow.setImageResource(R.drawable.baseline_keyboard_arrow_up_24);
+            } else {
+                holder.precLayout.setVisibility(View.GONE);
+                holder.arrow.setImageResource(R.drawable.baseline_keyboard_arrow_down_24);
+            }
+        });
     }
 
     // total number of rows
@@ -68,16 +93,22 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         TextView myTextView;
         TextView myHrView;
         TextView myPrec;
-        ImageView myIcon;
         TextView myHumidity;
+        LinearLayout precLayout;
+        LottieAnimationView animationView;
+        ImageView arrow;
+        TextView descTxt;
 
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.tempTxt);
             myHrView = itemView.findViewById(R.id.hourTxt);
-            myIcon = itemView.findViewById(R.id.pic);
             myPrec = itemView.findViewById(R.id.precipitationTxt);
+            precLayout = itemView.findViewById(R.id.precipitationLayout);
             myHumidity = itemView.findViewById(R.id.humidityTxt);
+            animationView = itemView.findViewById(R.id.animation_view);
+            arrow = itemView.findViewById(R.id.arrow);
+            descTxt = itemView.findViewById(R.id.statTxt);
             itemView.setOnClickListener(this);
         }
 
